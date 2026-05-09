@@ -50,3 +50,11 @@ kuning-9.
 kuning-reverse.
 kuning-skip.
 kuning-draw_two.
+hitam-wild.
+hitam-wild_draw_four.
+hitam-wild.
+hitam-wild_draw_four.
+hitam-wild.
+hitam-wild_draw_four.
+hitam-wild.
+hitam-wild_draw_four.
