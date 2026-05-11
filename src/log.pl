@@ -22,7 +22,7 @@ cekInfo :-
     printJumlahKartuPemain(Hand).
 
 /* Main Helper Rules */
-printJumlahKartuPemain(Hand) :- 
+printJumlahKartuPemain(Hand) :-                           % Fungsi untuk dipakai di cekInfo
     printJumlahKartuPemainHelper(Hand, 1).
 
 printJumlahKartuPemainHelper(Hand, CurrentIndex) :-
@@ -58,6 +58,7 @@ getElementAtIndex([_ | T], Index, Element) :-
     2. namaEl
     3. dst
 
+    digunakan di lihatKartu
 */
 printListBernomor(List) :-                         
     printListBernomorHelper(List, 1).
