@@ -162,11 +162,9 @@ mainkanKartu(N):-
     giliranPemain(Giliran),
     mainkanKartuHelper(N, Hand, Discard, Giliran),
     giliranPemain(NewGiliran),
-    %handPile(CurrentHand),
     nextPemain(NewGiliran, Hand),
-    
     discardPile(NewDiscard),
-    write(NewDiscard).
+    write(NewDiscard), !.
 
 /*
 Bolehkah pake integer()
