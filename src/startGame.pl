@@ -1,4 +1,13 @@
 :- include('loadKartu.pl').
+:- include('mainkanKartu.pl').
+:- dynamic(giliranPemain/1).
+:- dynamic(reverseGiliran/1).
+:- dynamic(discardPile/1).
+:- dynamic(handPile/1).
+:- dynamic(jumlahPemain/1).
+
+giliranPemain(1).
+reverseGiliran(1).
 
 startGame:- 
     write('Masukkan jumlah pemain: '), read(Num), nl, 
@@ -8,12 +17,15 @@ startGame:-
     % DiscardPile -> List Kartu yang sudah dimainkan
     % RemainingDeck -> List kartu yang belum diambil
     randomOrder(ListData, OrderedList), nl, printOrder(OrderedList), nl,
-    giveCards(OrderedList, RemainingDeck, FinaList), 
+    giveCards(OrderedList, RemainingDeck, FinalList), 
     % FinalDeck -> Deck Kartu setelah diambil satu untuk discardPile
-    makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck),
-    nl, write('Kartu discard top: '), printDiscard(DiscardPile), write('.'),!. 
-    % printList(DiscardPile), nl, printList(FinaList). 
+    makeDiscardPile(RemainingDeck, DiscardPile, FinalDeck),
+    nl, write('Kartu discard top: '), printDiscard(DiscardPile), write('.'),
+    % printList(DiscardPile), nl, printList(FinalList),
     % Variabel Penting ==> DiscardPile, FinalDeck, Final List
+    assertz(discardPile(DiscardPile)),
+    assertz(handPile(FinalList)), 
+    assertz(jumlahPemain(Num)), !.
 
 % 
 printDiscard([H]):- write(H).
@@ -82,12 +94,12 @@ printRest([]):- !. % Base Case =  List Sudah Habis
 printRest([[H|_] | T]):- write(' - '), write(H), printRest(T). % Rekursi Print Urutan
 
 %Predikat untuk bagi 7 kartu ke setiap pemain
-giveCards(OrderedList, RemainingDeck, FinaList):- 
+giveCards(OrderedList, RemainingDeck, FinalList):- 
     write('Setiap pemain mendapatkan 7 kartu acak.'), nl,
     % CardDeck -> Deck kartu lengkap
     % RemainingDeck -> Sisa Deck kartu setelah dibagi-bagi
     loadKartu('kartu.txt', CardDeck), 
-    giveCardsHelper(OrderedList, CardDeck, RemainingDeck, FinaList). 
+    giveCardsHelper(OrderedList, CardDeck, RemainingDeck, FinalList). 
 
 giveCardsHelper([], FinalDeck, FinalDeck, []):- !.
 giveCardsHelper([[Name|_]|RestPlayer], CurrentDeck, FinalRemainingDeck, [PlayerHand|Rest]):-
@@ -106,16 +118,42 @@ takeN(N, Deck, [SelectedCard|RestHand], RemainingDeck):-
     NextN is N - 1,
     takeN(NextN, TempDeck, RestHand, RemainingDeck), !.
 
-makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck):- 
+makeDiscardPile(RemainingDeck, DiscardPile, FinalDeck):- 
     takeN(1, RemainingDeck, DiscardPile, FinalDeck), 
     checkAngka(DiscardPile), !.
 
-makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck):- 
+makeDiscardPile(RemainingDeck, DiscardPile, FinalDeck):- 
     takeN(1, RemainingDeck, DiscardPile, FinalDeck), 
-    \+ checkAngka(DiscardPile), !, makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck).
+    \+ checkAngka(DiscardPile), !, makeDiscardPile(RemainingDeck, DiscardPile, FinalDeck).
 
 checkAngka([H|_]):- 
     kartuParser(H, [_, Number]), 
     \+ member(Number, [wild, wild_draw_four, skip, reverse, draw_two, wild, mimic]).
 
 
+
+
+
+/* ---------MAIN PREDIKAT--------- */
+mainkanKartu(N):-
+    \+ beforeDraw(_),       %Kalo semisal pemain sebelumnya mainin kartu draw 2/4, proses mainkanKartu biasa ga dijalanin
+
+    handPile(Hand),         %grab List Nama+Kartu dan List Discard Pile
+    discardPile(Discard),
+
+    giliranPemain(Giliran), %grab urutan saat ini
+
+    mainkanKartuHelper(N, Hand, Discard, Giliran),
+    
+    giliranPemain(NewGiliran),  %grab urutan pemain selanjutnya
+    nextPemain(NewGiliran, Hand),
+    discardPile(NewDiscard),
+    write(NewDiscard), !.
+
+
+
+lihatKartu:-
+    discardPile(Discard),
+    write(Discard), nl,
+    handPile(Hand),
+    write(Hand).
