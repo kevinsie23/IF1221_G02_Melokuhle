@@ -1,12 +1,22 @@
+:- include('loadKartu.pl').
 
 startGame:- 
     write('Masukkan jumlah pemain: '), read(Num), nl, 
     checkPlayerCount(Num), inputName(Num,1,ListData), !, 
-    %Ordered List = Urutan sdh dirandom
-    %Final List = Uurtan sdh dirandom + dikasi kartu
-    randomOrder(ListData, OrderedList), nl, printOrder(OrderedList), 
-    write('Setiap pemain mendapatkan 7 kartu acak.'), !.
+    % Ordered List = Urutan sdh dirandom
+    % FinalList = Uurtan sdh dirandom + dikasi kartu
+    % DiscardPile -> List Kartu yang sudah dimainkan
+    % RemainingDeck -> List kartu yang belum diambil
+    randomOrder(ListData, OrderedList), nl, printOrder(OrderedList), nl,
+    giveCards(OrderedList, RemainingDeck, FinaList), 
+    % FinalDeck -> Deck Kartu setelah diambil satu untuk discardPile
+    makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck),
+    nl, write('Kartu discard top: '), printDiscard(DiscardPile), write('.'),!. 
+    % printList(DiscardPile), nl, printList(FinaList). 
+    % Variabel Penting ==> DiscardPile, FinalDeck, Final List
 
+% 
+printDiscard([H]):- write(H).
 
 %Predikat Debugging Liat list
 printList([]):- !.
@@ -70,3 +80,42 @@ randomOrder(List, [Random|Rest]):-
 printOrder([[H|_]| Rest]):- write('Urutan pemain: '), write(H), printRest(Rest), write('.'), !.
 printRest([]):- !. % Base Case =  List Sudah Habis
 printRest([[H|_] | T]):- write(' - '), write(H), printRest(T). % Rekursi Print Urutan
+
+%Predikat untuk bagi 7 kartu ke setiap pemain
+giveCards(OrderedList, RemainingDeck, FinaList):- 
+    write('Setiap pemain mendapatkan 7 kartu acak.'), nl,
+    % CardDeck -> Deck kartu lengkap
+    % RemainingDeck -> Sisa Deck kartu setelah dibagi-bagi
+    loadKartu('kartu.txt', CardDeck), 
+    giveCardsHelper(OrderedList, CardDeck, RemainingDeck, FinaList). 
+
+giveCardsHelper([], FinalDeck, FinalDeck, []):- !.
+giveCardsHelper([[Name|_]|RestPlayer], CurrentDeck, FinalRemainingDeck, [PlayerHand|Rest]):-
+    takeSeven(CurrentDeck, SevenCards, RemainingDeck),
+    PlayerHand = [Name | SevenCards],
+    giveCardsHelper(RestPlayer, RemainingDeck, FinalRemainingDeck, Rest).
+
+takeSeven(CurrentDeck, SevenCards, RemainingDeck) :- takeN(7, CurrentDeck, SevenCards, RemainingDeck).
+
+takeN(0, Deck, [], Deck):- !. %Base Case: Sudah diambil 7 kartu
+takeN(N, Deck, [SelectedCard|RestHand], RemainingDeck):-
+    N>0, !,
+    lengthList(Deck, L),
+    random(0,L,Idx),
+    removeAt(Idx, Deck, SelectedCard, TempDeck),
+    NextN is N - 1,
+    takeN(NextN, TempDeck, RestHand, RemainingDeck), !.
+
+makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck):- 
+    takeN(1, RemainingDeck, DiscardPile, FinalDeck), 
+    checkAngka(DiscardPile), !.
+
+makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck):- 
+    takeN(1, RemainingDeck, DiscardPile, FinalDeck), 
+    \+ checkAngka(DiscardPile), !, makeDiscradPile(RemainingDeck, DiscardPile, FinalDeck).
+
+checkAngka([H|_]):- 
+    kartuParser(H, [_, Number]), 
+    \+ member(Number, [wild, wild_draw_four, skip, reverse, draw_two, wild, mimic]).
+
+
