@@ -6,8 +6,10 @@ loadKartu(Filename, ListKartu) :-
 processRead(Stream, []) :-
     at_end_of_stream(Stream), !.
 
-processRead(Stream, [H | T]) :-
+processRead(Stream, [Kartu | T]) :-
     \+ at_end_of_stream(Stream),
-    read(Stream, H),
+    read(Stream, Kartu),
     processRead(Stream, T).
 
+/* Split card's color and number */
+kartuParser(Color-Number, [Color, Number]) :- !.

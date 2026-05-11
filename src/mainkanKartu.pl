@@ -1,26 +1,48 @@
-:- dynamic(giliranPemain/1).
-:- dynamic(reverseGiliran/1).
-:- dynamic(discardPile/1).
-:- dynamic(beforeDraw/1).
-:- dynamic(handPile/1).
+:- include('loadKartu.pl').
+:- dynamic(beforeDraw/1). %Implementasi masih nunggu ambilKartu
 
-/*Initial State, run saat start*/
-giliranPemain(1).
-reverseGiliran(1).
+/* ---------MAIN HELPER PREDIKAT--------- */
+/* Kondisi kartu yang dimainkan valid (sesuai indeks dan sesuai discard pile) */
+mainkanKartuHelper(N, Hand, Discard, Giliran):-
+    ambilPemain(Giliran, Hand, [Nama|ListKartu]),     %Ngembaliin sublist isi nama pemain dan kartu-kartunya
+    ambilKartu(N, ListKartu, Kartu),                    %Ngambil kartu dari pemain sesuai indeks
+    validasiKartu(Kartu, Discard), !,                   %Cek kalo kartu bisa dimainin atau tidak (warna sama/angka sama/wildcard)
+    format('~w memainkan kartu: ~w. ~n', [Nama, Kartu]),
+    kartuParser(Kartu, [_, Angka]),                     %Parse kartu buat diambil angkanya biar bisa cek efek
+    retractall(giliranPemain(_)),                       %giliranPemain diupdate
+    efekKartu(Angka, Giliran),                          %Nentuin efek dari kartu beserta perubahan giliran
+    tambahDiscardPile(Kartu, Discard, NewDiscard),      %Masukin kartu yang dimainin ke Discard Pile
+    retractall(discardPile(_)),                         %discardPile yang lama dihapus
+    assertz(discardPile(NewDiscard)),                   %discardPile berisi kartu yang sudah ditambah dari tangan
+    buangKartuTangan(N, ListKartu, NewListKartu),       %Hilangin kartu yang sudah dimainin dari list tangan
+    NewPlayer = [Nama|NewListKartu],         
+    updateTangan(Giliran, Hand, NewPlayer, NewHand),    %Update list tangan agar kartu yang dimainkan tidak ada lagi
+    retractall(handPile(_)),                            %handPile yang lama dihapus
+    assertz(handPile(NewHand)).                         %handPile berisi list tanpa kartu yang sudah dimainkan
 
-/*DATA DUMMY*/
-contohMain(Hand, Discard):-
-    Hand = [
-        ['Najib', [merah-3, hijau-5, biru-2]],
-        ['Hanif', [hijau-reverse, biru-3, kuning-9]],
-        ['Kevin', [kuning-3, biru-skip, merah-5]],
-        ['Wimar', [merah-draw_two, hijau-1, kuning-7]]
-        ],
-    Discard = [merah-7, biru-2].
+/* Kondisi kartu yang dimainkan tidak valid (tidak sesuai indeks) */
+mainkanKartuHelper(N, Hand, _, Giliran):-
+    ambilPemain(Giliran, Hand, [Nama|ListKartu]),
+    \+ ambilKartu(N, ListKartu, _), !,
+    lengthTangan(ListKartu, Length),
+    format('Jumlah kartu ~w hanya ~w. ~n', [Nama, Length]),
+    write('Input ulang sesuai range.'), nl,
+    fail.
+
+/* Kondisi kartu yang dimainkan tidak valid (tidak sesuai discard pile) */
+mainkanKartuHelper(N, Hand, [H|_], Giliran):-
+    ambilPemain(Giliran, Hand, [_|ListKartu]),
+    ambilKartu(N, ListKartu, Kartu), 
+    \+ validasiKartu(Kartu, [H|_]), !,
+    format('Kartu paling atas saat ini adalah ~w. ~n', [H]),
+    write('Input ulang sesuai ketentuan.'), nl,
+    fail.
 
 
 
-/*HELPER UNTUK AMBIL PEMAIN DAN KARTU*/
+
+
+/* ---HELPER UNTUK AMBIL LIST PEMAIN DAN KARTU--- */
 ambilPemain(1, [H|_], H).
 ambilPemain(N, [_|T], TanganPemain):-
     N > 1,
@@ -35,7 +57,7 @@ ambilKartu(N, [_|T], Kartu):-
 
 
 
-/*HELPER UNTUK AMBIL BANYAK KARTU*/
+/* ---HELPER UNTUK HITUNG BANYAK KARTU--- */
 lengthTangan([], 0).
 lengthTangan([_|T], Length):-
     lengthTangan(T, NewLength),
@@ -43,62 +65,69 @@ lengthTangan([_|T], Length):-
 
 
 
-/*VALIDASI KARTU YANG DIMAINKAN*/
-parseKartu(Warna-Angka, Warna, Angka).
+/* ---VALIDASI KARTU YANG DIMAINKAN--- */
 cekKartu(Warna, _, Warna, _):- !.
 cekKartu(_, Angka, _, Angka):- !.
 cekKartu(hitam, _, _, _):- !.
 
 validasiKartu(Kartu, [H|_]):-
-    parseKartu(Kartu, WarnaTangan, AngkaTangan),
-    parseKartu(H, WarnaDiscard, AngkaDiscard),
+    kartuParser(Kartu, [WarnaTangan, AngkaTangan]),
+    kartuParser(H, [WarnaDiscard, AngkaDiscard]),
     cekKartu(WarnaTangan, AngkaTangan, WarnaDiscard, AngkaDiscard).
 
 
 
-/*EFEK TIAP KARTU*/
+/* ---EFEK TIAP KARTU--- */
 efekKartu(Kartu, Giliran):-
+    jumlahPemain(Jum),
     integer(Kartu), !,
     reverseGiliran(Geser),
-    NewGiliran is (Giliran - 1 + Geser) mod 4 + 1,
+    NewGiliran is (Giliran - 1 + Geser) mod Jum + 1,
     assertz(giliranPemain(NewGiliran)), !.
 efekKartu(reverse, Giliran):-
+    jumlahPemain(Jum),
     retract(reverseGiliran(Geser)),
     NewGeser is Geser * -1,
     assertz(reverseGiliran(NewGeser)),
-    NewGiliran is (Giliran - 1 + NewGeser) mod 4 + 1,
+    NewGiliran is (Giliran - 1 + NewGeser) mod Jum + 1,
     assertz(giliranPemain(NewGiliran)),
     write('Giliran permainan diputar balik.'), nl, !.
 efekKartu(skip, Giliran):-
+    jumlahPemain(Jum),
     reverseGiliran(Geser),
-    NewGiliran is (Giliran - 1 + (Geser * 2)) mod 4 + 1,
+    NewGiliran is (Giliran - 1 + (Geser * 2)) mod Jum + 1,
     assertz(giliranPemain(NewGiliran)),
     write('Pemain berikutnya kehilangan giliran.'), nl, !.
 efekKartu(draw_two, Giliran):-
+    jumlahPemain(Jum),
     reverseGiliran(Geser),
-    NewGiliran is (Giliran - 1 + (Geser * 2)) mod 4 + 1,
+    NewGiliran is (Giliran - 1 + (Geser * 2)) mod Jum + 1,
     assertz(giliranPemain(NewGiliran)),
     assertz(beforeDraw(2)),
     write('Pemain berikutnya harus mengambil 2 kartu dan kehilangan giliran.'), nl, !.
 efekKartu(wild_draw_four, Giliran):-
+    jumlahPemain(Jum),
     reverseGiliran(Geser),
-    NewGiliran is (Giliran - 1 + (Geser * 2)) mod 4 + 1,
+    NewGiliran is (Giliran - 1 + (Geser * 2)) mod Jum + 1,
     assertz(giliranPemain(NewGiliran)),
     assertz(beforeDraw(4)),
     write('Pemain berikutnya harus mengambil 4 kartu dan kehilangan giliran.'), nl, !.
 
 
 
-/*NEW DISCARD PILE*/
+/* ---NEW DISCARD PILE--- */
 tambahDiscardPile(Kartu, Discard, [Kartu|Discard]).
 
-/*NEXT PLAYER */
+
+
+/* ---PRINT NEXT PLAYER--- */
 nextPemain(NewGiliran, Hand):-
-    ambilPemain(NewGiliran, Hand, [Nama|[_]]),
+    ambilPemain(NewGiliran, Hand, [Nama|_]),
     format('Giliran ~w. ~n', [Nama]),!.
 
 
-/*UPDATE TANGAN PLAYER*/
+
+/* ---UPDATE TANGAN PLAYER--- */
 buangKartuTangan(1, [_|T], T).
 buangKartuTangan(N, [H|T], [H|T2]):-
     N > 1,
@@ -111,60 +140,14 @@ updateTangan(N, [H|T], NewPlayer, [H|T2]):-
     N1 is N - 1,
     updateTangan(N1, T, NewPlayer, T2).
 
-/*MAIN PROGRAM*/
-mainkanKartuHelper(N, Hand, Discard, Giliran):-
-    ambilPemain(Giliran, Hand, [Nama|[ListKartu]]),
-    ambilKartu(N, ListKartu, Kartu), 
-    validasiKartu(Kartu, Discard), !,
-    format('~w memainkan kartu: ~w. ~n', [Nama, Kartu]),
-    parseKartu(Kartu, _, Angka),
-    retractall(giliranPemain(_)),
-    efekKartu(Angka, Giliran),
-    tambahDiscardPile(Kartu, Discard, NewDiscard),
-    retractall(discardPile(_)),
-    assertz(discardPile(NewDiscard)),
-    buangKartuTangan(N, ListKartu, NewListKartu),
-    NewPlayer = [Nama, NewListKartu],
-    updateTangan(Giliran, Hand, NewPlayer, NewHand),
-    retractall(handPile(_)),
-    assertz(handPile(NewHand)).
-
-mainkanKartuHelper(N, Hand, _, Giliran):-
-    ambilPemain(Giliran, Hand, [Nama|[ListKartu]]),
-    \+ ambilKartu(N, ListKartu, _), !,
-    lengthTangan(ListKartu, Length),
-    format('Jumlah kartu ~w hanya ~w. ~n', [Nama, Length]),
-    write('Input ulang sesuai range.'), nl,
-    fail.
-
-mainkanKartuHelper(N, Hand, [H|_], Giliran):-
-    ambilPemain(Giliran, Hand, [_|[ListKartu]]),
-    ambilKartu(N, ListKartu, Kartu), 
-    \+ validasiKartu(Kartu, [H|_]), !,
-    format('Kartu paling atas saat ini adalah ~w. ~n', [H]),
-    write('Input ulang sesuai ketentuan.'), nl,
-    fail.
-    
-lihatKartu:-
-    handPile(Hand),
-    write(Hand).
 
 
-start:-
-    contohMain(Hand, Discard), % mungkin ini bisa pake getList dari part Wimar nanti
-    assertz(discardPile(Discard)),
-    assertz(handPile(Hand)).
 
-mainkanKartu(N):-
-    \+ beforeDraw(_),
-    handPile(Hand),
-    discardPile(Discard),
-    giliranPemain(Giliran),
-    mainkanKartuHelper(N, Hand, Discard, Giliran),
-    giliranPemain(NewGiliran),
-    nextPemain(NewGiliran, Hand),
-    discardPile(NewDiscard),
-    write(NewDiscard), !.
+printHand([]).
+printHand([H|T]):-
+    write(H), nl,
+    printHand(T).
+
 
 /*
 Bolehkah pake integer()
