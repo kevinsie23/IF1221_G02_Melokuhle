@@ -6,7 +6,7 @@ loadKartu(Filename, ListKartu) :-
 processRead(Stream, []) :-
     at_end_of_stream(Stream), !.
 
-processRead(Stream, [H | T]) :-
+processRead(Stream, [Kartu | T]) :-
     \+ at_end_of_stream(Stream),
     read(Stream, Kartu),
     processRead(Stream, T).
