@@ -150,7 +150,9 @@ mainkanKartu(N):-
     discardPile(NewDiscard),
     write(NewDiscard), !.
 
-lihatSemuaKartu:-
+
+
+lihatKartu:-
     discardPile(Discard),
     write(Discard), nl,
     handPile(Hand),
