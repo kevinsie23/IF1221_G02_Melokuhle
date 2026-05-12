@@ -1,5 +1,3 @@
-:- include('startGame.pl').
-
 /* Main Command */
 lihatCommand :- 
     write('Aksi utama yang tersedia:'), nl, write('1. ambilKartu.'), nl, nl,
