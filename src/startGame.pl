@@ -152,7 +152,7 @@ mainkanKartu(N):-
 
 
 
-lihatKartu:-
+lihatSemuaKartu:-
     discardPile(Discard),
     write(Discard), nl,
     handPile(Hand),
