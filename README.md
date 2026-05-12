@@ -1,14 +1,7 @@
 # IF1221_G02_Melokuhle
 
-## Catatan (Kepin):
+## Catatan untuk Milestone 1
+Setelah melakukan asistensi, kami akan melakukan rombakan untuk approach kami dari awalnya yang pembagian kerjanya didasarkan pada fitur ke pembagian berdasarkan objek-objek yang terdapat pada permainan. Pembagian kerja sudah dibahas ulang saat kelas dan akan segera dilakukan setelah pengumpulan Milestone 1 ini. 
 
-<<<<<<< HEAD
-- Buat discard pile ama handnya masih hardcode dulu masih nunggu dari wimar
-- Buat mekanisme pengambilan kartu draw two draw four nunggu dari hanif
-- boleh pake intenger() ga ya
-=======
-- Di kartu.txt gua bikin kartu hitamnya 4 wild sama 4 wild_draw_four, dan kartu mimic (bonus) belum ditambahin.
-
-- loadKartu(Filename, ListKartu) di loadKartu.pl untuk menaruh kartu dari kartu.txt ke list yang dapat diproses program.
-- kartuParser(Kartu, KartuTerpisah) di loadKartu.pl memisah term warna-angka jadi list [warna, angka].
->>>>>>> main
+Hingga saat ini, proses startGame dan mainkanKartu seharusnya dapat berjalan dengan cukup baik, serta lihatKartu, lihatCommand, dan cekInfo.
+Sementara itu, ambilKartu belum diimplementasi ke program secara menyeluruh sehingga bagian tersebut masih terpisah.
