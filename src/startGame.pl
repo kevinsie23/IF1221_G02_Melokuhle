@@ -1,5 +1,6 @@
 :- include('loadKartu.pl').
 :- include('mainkanKartu.pl').
+:- include('log.pl').
 :- dynamic(giliranPemain/1).
 :- dynamic(reverseGiliran/1).
 :- dynamic(discardPile/1).
