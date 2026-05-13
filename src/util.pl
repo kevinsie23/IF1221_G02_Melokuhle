@@ -7,11 +7,18 @@
 
 appendHead(X, List, [X|List]).
 
-appendTail(X,[],[X]).
-appendTail(X,[H|T], [H|Result]):- appendTail(X, T, ResultTail).
+appendTail(X,[],[X]):- !.
+appendTail(X,[H|T], [H|Result]):- appendTail(X, T, Result).
 
-appendAtN(X,0,List,[X|List]).
-appendAtN(X,Idx,[H|T], [H|Result]):- I>0, !, NextIdx is Idx-1, appendAtN(X, NextI, T, Result).
+appendAtN(X,0,List,[X|List]):- !.
+appendAtN(X,Idx,[H|T], [H|Result]):- Idx>0, !, NextIdx is Idx-1, appendAtN(X, NextIdx, T, Result).
+
+% Menghapus elemen ke Idx dari list dan menyimpannya dalam Variabel Element
+deleteAtN(0, [H|T], H, T). % BaseCase Idx 0.
+deleteAtN(Idx, [H|T], Element, [H|Rest]):- 
+    Idx>0,
+    NextId is Idx - 1,
+    removeAt(NextId, T, Element, Rest).
 
 lengthList([], 0):- !.
 lengthList([_|T], X):- lengthList(T,X1), X is X1+1.
