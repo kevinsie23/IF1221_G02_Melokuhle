@@ -1,0 +1,8 @@
+urutan_pemain:[Najib,Kevin,Wimar]
+giliran:Kevin
+discard_top:merah-7
+kartu_Najib:[kartu(merah,4),kartu(hitam,wild_card)]
+kartu_Kevin:[kartu(hijau,reverse),kartu(biru,9),kartu(merah,draw_two),kartu(kuning,4)]
+kartu_Wimar:[kartu(biru,skip)]
+arah_permainan:kanan
+status_UNI:[Kevin,Wimar]
