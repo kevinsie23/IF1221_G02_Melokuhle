@@ -1,0 +1,258 @@
+/* Data buat Test Run */
+start:-
+    retractall(discardPile(_)),
+    retractall(urutanPemain(_)),
+    retractall(reverseGiliran(_)),
+    retractall(infoPemain(_)),
+    retractall(idxGiliran(_)),
+    retractall(playedDraw),
+    retractall(playedDrawFour),
+    retractall(uniCalled(_)),
+    asserta(discardPile([kartu(merah, 7), kartu(biru, 2), kartu(kuning, skip)])),
+    asserta(urutanPemain(['Najib', 'Kevin', 'Wimar'])),
+    asserta(reverseGiliran(1)),
+    asserta(infoPemain('Najib', [kartu(merah, 4), kartu(hitam, wild_card)])),
+    asserta(infoPemain('Kevin', [kartu(hijau, reverse), kartu(biru, 9), kartu(merah, draw_two), kartu(kuning, 4)])),
+    asserta(infoPemain('Wimar', [kartu(biru, skip)])),
+    asserta(uniCalled('Wimar')),
+    asserta(uniCalled('Kevin')),
+    asserta(idxGiliran(2)).
+
+
+
+
+
+/* -----LOAD GAME----- */
+loadGame:-
+    retractall(discardPile(_)),
+    retractall(urutanPemain(_)),
+    retractall(reverseGiliran(_)),
+    retractall(infoPemain(_, _)),
+    retractall(idxGiliran(_)),
+    retractall(playedDraw),
+    retractall(playedDrawFour),
+    retractall(uniCalled(_)),
+
+    write('Masukkan nama file yang akan dimuat: '),
+    read(FileName),
+    open(FileName, read, S),
+
+    loadUrutan(S),
+    loadGiliran(S),
+    loadTopDiscard(S),
+    loadKartuPemain(S),
+    loadArahPermainan(S),
+    %loadWarnaAktif(S),
+    loadStatusUni(S),
+    close(S).
+
+
+
+
+
+/* -----SAVE GAME----- */
+saveGame:-
+    write('Masukkan nama file penyimpanan: '),
+    read(FileName),
+    open(FileName, write, S),
+    
+    writeUrutan(S),
+    writeGiliran(S),
+    writeTopDiscard(S),
+    writeKartuPemain(S),
+    writeArahPermainan(S),
+    %writeWarnaAktif(S),
+    writeStatusUni(S),
+    close(S).
+
+
+
+
+
+/* -----LIHAT KARTU----- */
+lihatKartu:-
+    write('Berikut kartu yang anda miliki: '), nl,
+    urutanPemain(ListPemain),
+    idxGiliran(Giliran),
+    grabNamaPemain(ListPemain, Giliran, Nama),
+    infoPemain(Nama, ListKartu),    
+    printListKartuPemain(ListKartu, 1).
+
+/* ---Helper Predikat: Print Kartu Pemain sesuai Urutan--- */
+printListKartuPemain([], _):- !.
+printListKartuPemain([kartu(Warna, Jenis)|T], No):-
+    format('~w. ~w-~w', [No, Warna, Jenis]), nl,
+    NextNo is No + 1,
+    printListKartuPemain(T, NextNo).
+
+
+
+
+
+
+
+/* -----LIHAT COMMAND----- */
+lihatCommand:-
+    write('Aksi utama yang tersedia:'), nl,
+    printAksiUtama(1),
+    nl,
+    write('Aksi pendukung yang tersedia:'), nl,
+    printAksiPendukung,
+    nl.
+
+
+/* ---Helper Predikat: Print semua aksi utama yang possible sesuai state permainan--- */
+printAksiUtama(No):-
+    printMainkanKartu(No, No1),
+    printAmbilKartu(No1, No2),
+    printTantang(No2, No3),
+    printUni(No3, No4),
+    printTangkap(No4, _).
+
+/*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
+printMainkanKartu(CurNo, NextNo):-
+    \+ playedDraw,
+    format('~w. mainkanKartu', [CurNo]), nl, !,
+    NextNo is CurNo + 1.
+printMainkanKartu(CurNo, NextNo):-
+    playedDraw, !,
+    NextNo is CurNo.
+
+/*Print ambilKartu dalam state apapun*/
+printAmbilKartu(CurNo, NextNo):-
+    format('~w. ambilKartu', [CurNo]), nl,
+    NextNo is CurNo + 1.
+
+/*Print tantang hanya jika pemain sebelumnya memainkan draw_four*/
+printTantang(CurNo, NextNo):-
+    playedDrawFour,
+    format('~w. tantang', [CurNo]), nl, !,
+    NextNo is CurNo + 1.
+printTantang(CurNo, NextNo):-
+    \+ playedDrawFour, !,
+    NextNo is CurNo.
+
+/*Print uni hanya jika kartu di tangan tersisa 1*/
+printUni(CurNo, NextNo):-
+    checkUni(Length),
+    Length =:= 1,
+    format('~w. uni', [CurNo]), nl, !,
+    NextNo is CurNo + 1.
+printUni(CurNo, NextNo):-
+    checkUni(Length),
+    Length > 1, !,
+    NextNo is CurNo.
+
+/*Print tangkap hanya jika pemain sebelumnya belum memanggil uni*/
+printTangkap(CurNo, NextNo):-
+    uniCalled(_),
+    format('~w. tangkap', [CurNo]), nl, !,
+    NextNo is CurNo + 1.
+printTangkap(CurNo, NextNo):-
+    \+ uniCalled, !,
+    NextNo is CurNo.
+
+/* ---Helper Predikat: Print semua aksi pendukung--- */
+printAksiPendukung:-
+    write('1. lihatCommand'), nl,
+    write('2. lihatKartu'), nl,
+    write('3. cekInfo'), nl.
+
+
+/* -----Helper Predikat: Menghitung jumlah kartu pemain----- */
+checkUni(Length):-
+    urutanPemain(ListPemain),
+    idxGiliran(Giliran),
+    grabNamaPemain(ListPemain, Giliran, Nama),
+    infoPemain(Nama, ListKartu),
+    lengthList(ListKartu, Length).
+
+
+/* -----Helper Predikat: Mengambil pemain sesuai giliran----- */
+grabNamaPemain([H|_], 1, H):- !.
+grabNamaPemain([_|T], Giliran, Nama):-
+    NextGiliran is Giliran - 1,
+    grabNamaPemain(T, NextGiliran, Nama).
+
+
+
+
+
+
+
+
+
+/* -----CEK INFO----- */
+cekInfo:-
+    printTopDiscardCard,
+    nl, nl,
+    printUrutanPemain,
+    nl, nl,
+    printInfoPemain.
+
+
+
+/* ---Helper Predikat: Print Urutan Nama dan Jumlah Kartu sesuai Arah---*/
+printInfoPemain:-
+    urutanPemain(ListPemain),
+    printNamaJumlahKartu(ListPemain, 1).
+
+printNamaJumlahKartu([H], NoUrut):-
+    infoPemain(H, ListKartu),
+    lengthList(ListKartu, Length),
+    format('Nama pemain ~w: ~w', [NoUrut, H]),
+    nl,
+    format('Jumlah kartu: ~w', [Length]),
+    nl, nl, !.
+printNamaJumlahKartu([H|T], NoUrut):-
+    infoPemain(H, ListKartu),
+    lengthList(ListKartu, Length),
+    format('Nama pemain ~w: ~w', [NoUrut, H]),
+    nl,
+    format('Jumlah kartu: ~w', [Length]),
+    nl, nl,
+    NewNoUrut is NoUrut + 1,
+    printNamaJumlahKartu(T, NewNoUrut), !.
+
+lengthList([], 0).              %Util.pl
+lengthList([_|T], Count):-      %Util.pl
+    lengthList(T, NewCount),
+    Count is NewCount + 1.
+
+
+
+/* ---Helper Predikat: Print Kartu Discard Pile Paling Atas--- */
+topDiscardPile([H|_], H).
+printTopDiscardCard:-
+    discardPile(DiscardPile),
+    write('Kartu discard top: '),
+    topDiscardPile(DiscardPile, kartu(Warna, Jenis)),
+    format('~w-~w.', [Warna, Jenis]).
+
+/* ---Helper Predikat: Print Urutan Pemain--- */
+printUrutanPemain:-
+    urutanPemain(ListPemain),
+    write('Urutan pemain: '),
+    printNamaUrutan(ListPemain).
+
+printNamaUrutan([H]):-
+    format('~w.', [H]), !.
+printNamaUrutan([H|T]):-
+    format('~w - ', [H]),
+    printNamaUrutan(T).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
