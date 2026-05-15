@@ -1,6 +1,7 @@
 /* Data buat Test Run */
 start:-
     retractall(discardPile(_)),
+    retractall(drawPile(_)),
     retractall(urutanPemain(_)),
     retractall(jumlahPemain(_)),
     retractall(reverseGiliran(_)),
@@ -9,6 +10,7 @@ start:-
     retractall(playedDraw),
     retractall(playedDrawFour),
     retractall(uniCalled(_)),
+    asserta(drawPile([kartu(hijau, 8), kartu(hijau, skip), kartu(kuning, 8)])),
     asserta(discardPile([kartu(merah, 7), kartu(biru, 2), kartu(kuning, skip)])),
     asserta(jumlahPemain(3)),
     asserta(urutanPemain(['Najib', 'Kevin', 'Wimar'])),
