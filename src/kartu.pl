@@ -1,9 +1,32 @@
 /* Main Command */
 mainkanKartu(IdxKartu) :-
+    playedDraw,
+    write('Pemain sebelumnya memainkan draw_two! Silahkan ambilKartu'), !.
+
+mainkanKartu(IdxKartu) :-
+    \+ playedDraw,
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
-    playCard(NamaPemain, IdxKartu).
+    playCard(NamaPemain, IdxKartu), !.
+
+ambilKartu :-
+    playedDraw,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    giveNCard(NamaPemain, 2),
+    retractall(playedDraw),
+    nextGiliran, !.  
+
+ambilKartu :-
+    \+ playedDraw,
+    \+ playedDrawFour,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    giveNCard(NamaPemain, 1),
+    nextGiliran, !.
 
 /* Main Rules */
 giveNCard(_, 0) :- !.                                   % Base Case
@@ -24,7 +47,7 @@ playCard(NamaPemain, IdxKartu) :-                           % Case if kartu is n
     returnCard(NamaPemain, IdxKartu, kartu(Warna, Angka)),
     \+ (Warna = WarnaDiscard ; Angka = AngkaDiscard), 
     Warna \= hitam,
-    write('Kartu tidak cocok!'), !.
+    write('Kartu tidak cocok!'), nl, !.
 
 playCard(NamaPemain, IdxKartu) :-
     discardPile([kartu(WarnaDiscard, AngkaDiscard) | _]),
@@ -46,9 +69,9 @@ returnCard(NamaPemain, IdxKartu, Kartu) :-
     infoPemain(NamaPemain, ListKartu),
     getElementAtIndex(ListKartu, IdxKartu, Kartu).
 
-% useEffect untuk draw_two dan wild card belum diimplementasikan
+% useEffect untuk wild card belum diimplementasikan
 useEffect(kartu(Warna, Angka)) :-
-    \+ (Angka = reverse ; Angka = skip),
+    \+ (Angka = reverse ; Angka = skip ; Angka = draw_two),
     Warna \= hitam, !.
 
 useEffect(kartu(_, Angka)) :-                           % useEffect untuk reverse
@@ -61,6 +84,10 @@ useEffect(kartu(_, Angka)) :-                           % useEffect untuk revers
 useEffect(kartu(_, Angka)) :-                           % useEffect untuk skip
     Angka = skip,
     nextGiliran, !.
+
+useEffect(kartu(_, Angka)) :-                           % useEffect untuk draw_two
+    Angka = draw_two,
+    assertz(playedDraw).
 
 nextGiliran :-
     jumlahPemain(JumlahPemain),
