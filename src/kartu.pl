@@ -1,9 +1,9 @@
-/* For Test Case */
-
-discardPile([kartu(merah, 5)]).
-drawPile([kartu(merah, 6), kartu(merah, 7), kartu(kuning, reverse), kartu(hijau, skip)]).
-infoPemain('Tes1', [kartu(kuning, 1), kartu(kuning, 2)]).
-infoPemain('Tes2', [kartu(merah, 2), kartu(merah, 3)]).
+/* Main Command */
+mainkanKartu(IdxKartu) :-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    playCard(NamaPemain, IdxKartu).
 
 /* Main Rules */
 giveNCard(_, 0) :- !.                                   % Base Case
@@ -30,7 +30,7 @@ playCard(NamaPemain, IdxKartu) :-
     discardPile([kartu(WarnaDiscard, AngkaDiscard) | _]),
     returnCard(NamaPemain, IdxKartu, kartu(Warna, Angka)),
     (Warna = WarnaDiscard ; Angka = AngkaDiscard),
-/*    useEffect(kartu(Warna, Angka)),   Belum dipakai */
+    useEffect(kartu(Warna, Angka)),   
     infoPemain(NamaPemain, ListKartu),                             
     deleteAtN(IdxKartu, ListKartu, _, NewListKartu),
     discardPile(ListDiscard),
@@ -38,9 +38,34 @@ playCard(NamaPemain, IdxKartu) :-
     retract(infoPemain(NamaPemain, _)),
     assertz(infoPemain(NamaPemain, NewListKartu)),
     retract(discardPile(_)),
-    assertz(discardPile(NewListDiscard)), !.
+    assertz(discardPile(NewListDiscard)), 
+    nextGiliran, !.
 
 /* Helper Rules */
 returnCard(NamaPemain, IdxKartu, Kartu) :-
     infoPemain(NamaPemain, ListKartu),
     getElementAtIndex(ListKartu, IdxKartu, Kartu).
+
+% useEffect untuk draw_two dan wild card belum diimplementasikan
+useEffect(kartu(Warna, Angka)) :-
+    \+ (Angka = reverse ; Angka = skip),
+    Warna \= hitam, !.
+
+useEffect(kartu(_, Angka)) :-                           % useEffect untuk reverse
+    Angka = reverse,
+    reverseGiliran(ReverseGiliran),
+    NewReverseGiliran is ReverseGiliran * -1,
+    retract(reverseGiliran(_)),
+    assertz(reverseGiliran(NewReverseGiliran)), !.
+
+useEffect(kartu(_, Angka)) :-                           % useEffect untuk skip
+    Angka = skip,
+    nextGiliran, !.
+
+nextGiliran :-
+    jumlahPemain(JumlahPemain),
+    idxGiliran(Giliran),
+    reverseGiliran(GiliranIncrement),
+    NewGiliran is ((Giliran + GiliranIncrement - 1) mod JumlahPemain) + 1, 
+    retract(idxGiliran(_)),
+    assertz(idxGiliran(NewGiliran)), !.

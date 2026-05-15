@@ -1,5 +1,6 @@
 :- dynamic(discardPile/1).
 :- dynamic(urutanPemain/1).
+:- dynamic(jumlahPemain/1).
 :- dynamic(reverseGiliran/1).
 :- dynamic(infoPemain/2).
 :- dynamic(idxGiliran/1).
