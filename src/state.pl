@@ -18,7 +18,7 @@ start:-
     asserta(infoPemain('Wimar', [kartu(biru, skip)])),
     asserta(uniCalled('Wimar')),
     asserta(uniCalled('Kevin')),
-    asserta(idxGiliran(2)).
+    asserta(idxGiliran(1)).
 
 
 

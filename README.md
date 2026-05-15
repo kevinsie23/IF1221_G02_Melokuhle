@@ -7,7 +7,10 @@
 ## Catatan saveload.pl:
 - Belom bikin mekanisme buat nentuin warna-aktif di kondisi kartunya hitam, nunggu dari kartu.pl
 
-
+## Catatan kartu.pl:
+- Belom bikin useEffect untuk draw_two dan kartu hitam karena perlu konfirmasi mengenai ambilKartu.
+- Next giliran ke pemain selanjutnya diimplementasi di kartu.pl
+- Next giliran bekerja dengan mengincrement giliran berdasarkan nilai reverseGiliran, jadi ga ngubah list urutanPemain, kalo mau diganti jadi ngubah listnya bisa juga sih.
 
 
 
