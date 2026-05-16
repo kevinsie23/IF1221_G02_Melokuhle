@@ -1,10 +1,15 @@
 /* Main Command */
-mainkanKartu(IdxKartu) :-
+mainkanKartu(_) :-
     playedDraw,
     write('Pemain sebelumnya memainkan draw_two! Silahkan ambilKartu'), !.
 
+mainkanKartu(_) :-
+    playedDrawFour,
+    write('Pemain sebelumnya memainkan wild_draw_four! Silahkan ambilKartu'), !.
+
 mainkanKartu(IdxKartu) :-
     \+ playedDraw,
+    \+ playedDrawFour,
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
@@ -17,7 +22,18 @@ ambilKartu :-
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     giveNCard(NamaPemain, 2),
     retractall(playedDraw),
-    nextGiliran, !.  
+    retractall(playedDrawFour),
+    nextGiliran, !. 
+
+ambilKartu :-
+    playedDrawFour,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    giveNCard(NamaPemain, 4),
+    retractall(playedDraw),
+    retractall(playedDrawFour),
+    nextGiliran, !.   
 
 ambilKartu :-
     \+ playedDraw,
@@ -43,16 +59,18 @@ giveNCard(NamaPemain, N) :-
     giveNCard(NamaPemain, NewN).
 
 playCard(NamaPemain, IdxKartu) :-                           % Case if kartu is not matched with on the discard
-    discardPile([kartu(WarnaDiscard, AngkaDiscard) | _]),
+    discardPile([kartu(_, AngkaDiscard) | _]),
     returnCard(NamaPemain, IdxKartu, kartu(Warna, Angka)),
-    \+ (Warna = WarnaDiscard ; Angka = AngkaDiscard), 
-    Warna \= hitam,
+    warnaActive(WarnaActive),
+    ((\+ (Warna = WarnaActive ; Angka = AngkaDiscard), 
+    Warna \= hitam) ; (Angka = wild, AngkaDiscard = wild)),
     write('Kartu tidak cocok!'), nl, !.
 
 playCard(NamaPemain, IdxKartu) :-
-    discardPile([kartu(WarnaDiscard, AngkaDiscard) | _]),
+    discardPile([kartu(_, AngkaDiscard) | _]),
     returnCard(NamaPemain, IdxKartu, kartu(Warna, Angka)),
-    (Warna = WarnaDiscard ; Angka = AngkaDiscard),
+    warnaActive(WarnaActive),
+    (Warna = WarnaActive ; Angka = AngkaDiscard ; Warna = hitam),
     useEffect(kartu(Warna, Angka)),   
     infoPemain(NamaPemain, ListKartu),                             
     deleteAtN(IdxKartu, ListKartu, _, NewListKartu),
@@ -72,22 +90,50 @@ returnCard(NamaPemain, IdxKartu, Kartu) :-
 % useEffect untuk wild card belum diimplementasikan
 useEffect(kartu(Warna, Angka)) :-
     \+ (Angka = reverse ; Angka = skip ; Angka = draw_two),
-    Warna \= hitam, !.
+    Warna \= hitam, 
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)), !.
 
-useEffect(kartu(_, Angka)) :-                           % useEffect untuk reverse
+useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk reverse
     Angka = reverse,
     reverseGiliran(ReverseGiliran),
     NewReverseGiliran is ReverseGiliran * -1,
     retract(reverseGiliran(_)),
-    assertz(reverseGiliran(NewReverseGiliran)), !.
+    assertz(reverseGiliran(NewReverseGiliran)), 
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)), !.
 
-useEffect(kartu(_, Angka)) :-                           % useEffect untuk skip
+useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk skip
     Angka = skip,
-    nextGiliran, !.
+    nextGiliran, 
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)),!.
 
 useEffect(kartu(_, Angka)) :-                           % useEffect untuk draw_two
     Angka = draw_two,
-    assertz(playedDraw).
+    assertz(playedDraw),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)), !.
+
+useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu wild
+    write('Kartu wild dimainkan!'), nl, nl,
+    printListWithIndex([merah, kuning, biru, hijau]), nl,
+    write('Pilihlah angka sesuai dengan warna pilihanmu: '),
+    read(IdxWarna),
+    getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)), !.
+
+useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect untuk kartu wild
+    write('Kartu wild dimainkan!'), nl, nl,
+    printListWithIndex([merah, kuning, biru, hijau]), nl,
+    write('Pilihlah angka sesuai dengan warna pilihanmu: '),
+    read(IdxWarna),
+    getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)),
+    retractall(playedDrawFour),
+    assertz(playedDrawFour), !.
 
 nextGiliran :-
     jumlahPemain(JumlahPemain),
