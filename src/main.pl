@@ -23,6 +23,9 @@ startGame:-
     initDiscardPile,
     discardPile([kartu(Warna, Jenis)|_]),
     write('Kartu discard top: '), format('~w-~w', [Warna,Jenis]), write('.'), nl, nl,
+    assertz(warnaActive(Warna)),
+    assertz(idxGiliran(1)),
+    assertz(reverseGiliran(1)),
     urutanPemain([Pemain1|_]),
     write('Giliran '), write(Pemain1), write('.'). 
 
@@ -136,7 +139,21 @@ takeN(N, Deck, [SelectedCard|RestHand], RemainingDeck):-
 
 initDiscardPile:- 
     drawPile(DrawList),
-    takeN(1, DrawList, Card, NewDrawList),
+    discardPileTop(DrawList, Card, NewDrawList),
     assertz(discardPile(Card)),
-    retract(drawPile(_)),
-    assertz(drawPile(NewDrawList)), !.
+        retract(drawPile(_)),
+        assertz(drawPile(NewDrawList)), !.
+
+discardPileTop(DrawList, Card, NewDrawList):- 
+    takeN(1, DrawList, Card, NewDrawList), checkDiscard(Card), !.
+
+discardPileTop(DrawList, Card, OutputDrawList):- 
+    takeN(1, DrawList, InvalidCard, NewDrawList), 
+    \+ checkDiscard(InvalidCard), !, 
+    appendTail(NewDrawList, InvalidCard, FinalDrawList),
+    discardPileTop(FinalDrawList, Card, OutputDrawList).
+
+
+
+checkDiscard(kartu(_, Jenis)):- 
+    \+ isMember(Jenis, [wild, wild_draw_four, skip, reverse, draw_two, mimic]), !.
