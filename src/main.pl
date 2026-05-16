@@ -1,5 +1,4 @@
 :- include('dynamic.pl').
-:- include('util.pl').
 :- include('save.pl').
 :- include('load.pl').
 :- include('state.pl').
@@ -7,6 +6,7 @@
 :- include('util.pl').
 
 urutanPemain([]). % Inisialisasi List Urutan Pemain
+
 startGame:- 
     write('Masukkan jumlah pemain: '), read(Num), nl,
     checkPlayerCount(Num),
@@ -15,36 +15,39 @@ startGame:-
 checkPlayerCount(X):- X>=2, X=< 4, !.
 checkPlayerCount(_):- write('Mohon masukkan angka antara 2-4.'), nl, startGame.
 
-inputName(PlayerNumber):- inputNameHelper(PlayerNumber,1, SeenList).
+inputName(PlayerNumber):- inputNameHelper(PlayerNumber,1).
 
 % Base Case
 inputNameHelper(0,_):- !.
 % Case Sucess
 inputNameHelper(X,Count):- 
     X>0,
-    retract(urutanPemain(List)),
-    write('Masukkan nama pemain '), write(Count), write(': '),
+    write('Masukkan Name pemain '), write(Count), write(': '),
     read(Name),
+    urutanPemain(List),
     \+ isMember(Name, List), !,  % Cek apakah Name ada di List urutan pemain
-    assertz(urutanPemain([Name|List])), % Append Nama ke List Urutan Pemain
-    assertz(infoPemain(Nama, [])), % Inisialisasi Info Pemain dgn nama valid dan list kartu kosong
+    retract(urutanPemain(List)),
+    assertz(urutanPemain([Name|List])), % Append Name ke List Urutan Pemain
+    assertz(infoPemain(Name, [])), % Inisialisasi Info Pemain dgn Name valid dan list kartu kosong
     NextX is X-1, NextCount is Count+1,
-    inputName(NextX, NextCount).
+    inputNameHelper(NextX, NextCount).
 % Case Fail
 inputNameHelper(X,Count):- 
     X>0,
-    write('Nama sudah digunakan. Masukkan nama lain:  '), 
+    write('Name sudah digunakan. Masukkan Name lain:  '), 
     retryInput(X,Count).
-% retryInput
+
+% retryInput Sucess
 retryInput(X, Count):-
-    retract(urutanPemain(List)),
     read(Name),
+    urutanPemain(List),
     \+ isMember(Name, List), !,
-    assertz(urutanPemain([Name|List])), % Append Nama ke List Urutan Pemain
-    assertz(infoPemain(Nama, [])), % Inisialisasi Info Pemain dgn nama valid dan list kartu kosong
+    retract(urutanPemain(List)),
+    assertz(urutanPemain([Name|List])), % Append Name ke List Urutan Pemain
+    assertz(infoPemain(Name, [])), % Inisialisasi Info Pemain dgn Name valid dan list kartu kosong
     NextX is X-1, NextCount is Count+1,
     inputNameHelper(NextX, NextCount).
-%Retry Fail
+% retryInput Fail
 retryInput(X, Count):-     
-    write('Nama sudah digunakan. Masukkan nama lain:  '), 
+    write('Name sudah digunakan. Masukkan Name lain:  '), 
     retryInput(X, Count).
