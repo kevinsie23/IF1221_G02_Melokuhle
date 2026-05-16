@@ -16,8 +16,16 @@ startGame:-
     inputName(Num),
     randomiseOrder, 
     printOrder,
-    initDrawPile, % Membentuk drawpile
-    giveCards. % Membagikan kartu
+    % Membentuk drawpile
+    initDrawPile, 
+    % Membagikan kartu
+    giveCards, 
+    initDiscardPile,
+    discardPile([kartu(Warna, Jenis)|_]),
+    write('Kartu discard top: '), format('~w-~w', [Warna,Jenis]), write('.'), nl, nl,
+    urutanPemain([Pemain1|_]),
+    write('Giliran '), write(Pemain1), write('.'). 
+
 
 startGame:- startedGame(1), !, write('Game sudah dimulai').
 
@@ -75,18 +83,17 @@ shuffleOrder(OldList, [H|T]):-
     shuffleOrder(Rest, T), !.
 
 printOrder:- 
-    urutanPemain([H|T]),
+    nl, urutanPemain([H|T]),
     write('Urutan pemain: '), write(H),
     printRest(T).
 
-printRest([]):- nl, !.
+printRest([]):- nl, nl, !.
 printRest([H|T]):- write(' - '), write(H), printRest(T).
     
 initDrawPile:- 
     open('kartu.txt', read, Stream),
     initDrawPileHelper(Stream, []),
     close(Stream).
-
 initDrawPileHelper(Stream, ListKartu):- 
     at_end_of_stream(Stream), !, 
     assertz(drawPile(ListKartu)).
@@ -98,7 +105,7 @@ initDrawPileHelper(Stream, List):-
     initDrawPileHelper(Stream, ListKartu).
 
 giveCards:- 
-    write('Setiap pemain mendapatkan 7 kartu acak.'), nl,
+    write('Setiap pemain mendapatkan 7 kartu acak.'), nl, nl,
     urutanPemain(List),
     giveCardsHelper(List).
 
@@ -116,11 +123,8 @@ giveCardsHelper([H|T]):-
     
     giveCardsHelper(T), !.
 
-
 takeSeven(DrawList, SevenCards, DrawList1):- takeN(7, DrawList, SevenCards, DrawList1), !.
-
 takeN(0, Deck, [], Deck):- !. %Base Case: Sudah diambil 7 kartu
-
 takeN(N, Deck, [SelectedCard|RestHand], RemainingDeck):-
     N>0, !,
     lengthList(Deck, L),
@@ -129,3 +133,10 @@ takeN(N, Deck, [SelectedCard|RestHand], RemainingDeck):-
     deleteAtN(Idx, Deck, SelectedCard, TempDeck),
     NextN is N - 1,
     takeN(NextN, TempDeck, RestHand, RemainingDeck), !.
+
+initDiscardPile:- 
+    drawPile(DrawList),
+    takeN(1, DrawList, Card, NewDrawList),
+    assertz(discardPile(Card)),
+    retract(drawPile(_)),
+    assertz(drawPile(NewDrawList)), !.
