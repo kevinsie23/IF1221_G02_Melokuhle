@@ -8,3 +8,4 @@
 :- dynamic(playedDrawFour/0).
 :- dynamic(uniCalled/1).
 :- dynamic(drawPile/1).
+:- dynamic(startGame/1).
