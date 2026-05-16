@@ -10,16 +10,23 @@ appendAtN(X,0,List,[X|List]):- !.
 appendAtN(X,Idx,[H|T], [H|Result]):- Idx>0, !, NextIdx is Idx-1, appendAtN(X, NextIdx, T, Result).
 
 % Menghapus elemen ke Idx dari list dan menyimpannya dalam Variabel Element
-deleteAtN(0, [H|T], H, T). % BaseCase Idx 0.
-deleteAtN(Idx, [H|T], Element, [H|Rest]):- 
-    Idx>0,
+deleteAtN(1, [H|T], H, T) :- !.
+deleteAtN(Idx, [H|T], Element, [H|Rest]) :-
+    Idx > 1,
     NextId is Idx - 1,
-    removeAt(NextId, T, Element, Rest).
+    deleteAtN(NextId, T, Element, Rest).
 
 
 lengthList([], 0):- !.
 lengthList([_|T], X):- lengthList(T,X1), X is X1+1.
 
+% Mengambil elemen pada list berdasarkan idx, idx pertama adalah 1
+getElementAtIndex([H | _], 1, H) :- !.              % Untuk mengambil kartu sesuai dengan gilirannya.
+
+getElementAtIndex([_ | T], Index, Element) :-
+    Index > 1,
+    NextIndex is Index - 1,
+    getElementAtIndex(T, NextIndex, Element).
 
 %Menampilkan List
 printList([]):- nl, !.
