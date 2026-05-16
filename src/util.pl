@@ -1,3 +1,6 @@
+head([H | _], H).
+tail([_ | T], T).
+
 % Menambah elemen di head
 appendHead(X, List, [X|List]).
 
@@ -31,5 +34,17 @@ getElementAtIndex([_ | T], Index, Element) :-
 %Menampilkan List
 printList([]):- nl, !.
 printList([H|T]):- write(H), nl, printList(T).
+
+printListWithIndex(List) :-                         
+    printListWithIndexHelper(List, 1).
+
+printListWithIndexHelper([], _) :- !.
+printListWithIndexHelper(List, StartIndex) :-
+    List \== [],
+    head(List, Element),
+    write(StartIndex), write('. '), write(Element), nl,
+    NextIndex is StartIndex + 1,
+    tail(List, NextList),
+    printListWithIndexHelper(NextList, NextIndex).
 
 printCard(Warna, Jenis):- format('~w-~w~n', [Warna,Jenis]).
