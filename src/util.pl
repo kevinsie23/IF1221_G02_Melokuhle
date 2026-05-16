@@ -48,3 +48,8 @@ printListWithIndexHelper(List, StartIndex) :-
     printListWithIndexHelper(NextList, NextIndex).
 
 printCard(Warna, Jenis):- format('~w-~w~n', [Warna,Jenis]).
+
+
+% isMember --> Lihat apakah X ada di List
+isMember(X, [X|_]):- !.
+isMember(X, [_|T]):- isMember(X,T).
