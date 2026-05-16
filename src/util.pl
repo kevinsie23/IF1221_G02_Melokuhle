@@ -26,3 +26,8 @@ printList([]):- nl, !.
 printList([H|T]):- write(H), nl, printList(T).
 
 printCard(Warna, Jenis):- format('~w-~w~n', [Warna,Jenis]).
+
+
+% isMember --> Lihat apakah X ada di List
+isMember(X, [X|_]):- !.
+isMember(X, [_|T]):- isMember(X,T), !.
