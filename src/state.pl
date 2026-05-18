@@ -1,43 +1,17 @@
-/* Data buat Test Run */
-start:-
-    retractall(discardPile(_)),
-    retractall(drawPile(_)),
-    retractall(urutanPemain(_)),
-    retractall(jumlahPemain(_)),
-    retractall(reverseGiliran(_)),
-    retractall(infoPemain(_)),
-    retractall(idxGiliran(_)),
-    retractall(playedDraw),
-    retractall(playedDrawFour),
-    retractall(uniCalled(_)),
-    retractall(warnaActive(_)),
-    asserta(drawPile([kartu(hijau, 8), kartu(hijau, skip), kartu(kuning, 8), kartu(biru, draw_two)])),
-    asserta(discardPile([kartu(hitam, wild), kartu(biru, 2), kartu(kuning, skip)])),
-    asserta(warnaActive(merah)),
-    asserta(jumlahPemain(3)),
-    asserta(urutanPemain(['Najib', 'Kevin', 'Wimar'])),
-    asserta(reverseGiliran(1)),
-    asserta(infoPemain('Najib', [kartu(merah, 4), kartu(hitam, wild_draw_four)])),
-    asserta(infoPemain('Kevin', [kartu(hijau, reverse), kartu(biru, 9), kartu(merah, draw_two), kartu(kuning, 4)])),
-    asserta(infoPemain('Wimar', [kartu(biru, skip), kartu(merah, skip)])),
-    asserta(uniCalled('Wimar')),
-    asserta(uniCalled('Kevin')),
-    asserta(idxGiliran(1)).
-
-
-
-
-
 /* -----LOAD GAME----- */
 loadGame:-
     retractall(discardPile(_)),
     retractall(urutanPemain(_)),
+    retractall(jumlahPemain(_)),
     retractall(reverseGiliran(_)),
     retractall(infoPemain(_, _)),
     retractall(idxGiliran(_)),
     retractall(playedDraw),
     retractall(playedDrawFour),
     retractall(uniCalled(_)),
+    retractall(drawPile(_)),
+    retractall(warnaActive(_)),
+    retractall(startedGame(_)),
 
     write('Masukkan nama file yang akan dimuat: '),
     read(FileName),
@@ -46,11 +20,12 @@ loadGame:-
     loadUrutan(S),
     loadGiliran(S),
     loadTopDiscard(S),
+    loadWarnaAktif(S),
     loadKartuPemain(S),
     loadArahPermainan(S),
-    %loadWarnaAktif(S),
     loadStatusUni(S),
-    close(S).
+    close(S),
+    assertz(startedGame(1)).
 
 
 
@@ -65,9 +40,9 @@ saveGame:-
     writeUrutan(S),
     writeGiliran(S),
     writeTopDiscard(S),
+    writeWarnaAktif(S),
     writeKartuPemain(S),
     writeArahPermainan(S),
-    %writeWarnaAktif(S),
     writeStatusUni(S),
     close(S).
 
@@ -141,7 +116,7 @@ printTantang(CurNo, NextNo):-
 /*Print uni hanya jika kartu di tangan tersisa 1*/
 printUni(CurNo, NextNo):-
     checkUni(Length),
-    Length =:= 1,
+    Length =:= 2,
     format('~w. uni', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printUni(CurNo, NextNo):-
@@ -155,7 +130,7 @@ printTangkap(CurNo, NextNo):-
     format('~w. tangkap', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printTangkap(CurNo, NextNo):-
-    \+ uniCalled, !,
+    \+ uniCalled(_), !,
     NextNo is CurNo.
 
 /* ---Helper Predikat: Print semua aksi pendukung--- */

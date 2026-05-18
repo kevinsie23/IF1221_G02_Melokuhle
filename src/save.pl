@@ -1,7 +1,7 @@
 /* ---WRITE URUTAN--- */
 writeUrutan(S):-
     urutanPemain(ListPemain),
-    format(S, 'urutan_pemain:~w~n', [ListPemain]).
+    format(S, 'urutan_pemain:~w.~n', [ListPemain]).
 
 
 
@@ -12,7 +12,7 @@ writeGiliran(S):-
     urutanPemain(ListPemain),
     idxGiliran(Giliran),
     grabNamaPemain(ListPemain, Giliran, Nama),
-    format(S, 'giliran:~w~n', [Nama]).
+    format(S, 'giliran:~w.~n', [Nama]).
 
 
 
@@ -22,7 +22,16 @@ writeGiliran(S):-
 writeTopDiscard(S):-
     discardPile(DiscardPile),
     topDiscardPile(DiscardPile, kartu(Warna, Jenis)),
-    format(S, 'discard_top:~w-~w~n', [Warna, Jenis]).
+    format(S, 'discard_top:~w-~w.~n', [Warna, Jenis]).
+
+
+
+
+
+/* ---WRITE WARNA AKTIF--- */
+writeWarnaAktif(S):-
+    warnaActive(Warna),
+    format(S, 'warna_aktif:~w.~n', [Warna]).
 
 
 
@@ -43,7 +52,7 @@ printNamaKartu(S, [H|T]):-
 printKartu(S, []):-
     format(S, ']~n', []), !.
 printKartu(S, [kartu(Warna, Jenis)]):-
-    format(S, '~w-~w]~n', [Warna, Jenis]), !.
+    format(S, '~w-~w].~n', [Warna, Jenis]), !.
 printKartu(S, [kartu(Warna, Jenis)|T]):-
     format(S, '~w-~w,', [Warna, Jenis]),
     printKartu(S, T).
@@ -56,11 +65,11 @@ printKartu(S, [kartu(Warna, Jenis)|T]):-
 writeArahPermainan(S):-
     reverseGiliran(Arah),
     Arah =:= 1, !,
-    format(S, 'arah_permainan:kanan~n', []).
+    format(S, 'arah_permainan:kanan.~n', []).
 writeArahPermainan(S):-
     reverseGiliran(Arah),
     Arah =:= -1, !,
-    format(S, 'arah_permainan:kiri~n', []).
+    format(S, 'arah_permainan:kiri.~n', []).
 
 
 
@@ -70,7 +79,7 @@ writeArahPermainan(S):-
 writeStatusUni(S):-
     urutanPemain(ListPemain),
     possibleUni(ListPemain, ListUni),
-    format(S, 'status_UNI:~w~n', [ListUni]).
+    format(S, 'status_UNI:~w.~n', [ListUni]).
 
 possibleUni([], []):- !.
 possibleUni([H|T], [H|T2]):-

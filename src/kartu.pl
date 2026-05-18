@@ -109,7 +109,7 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk sk
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)),!.
 
-useEffect(kartu(_, Angka)) :-                           % useEffect untuk draw_two
+useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk draw_two
     Angka = draw_two,
     assertz(playedDraw),
     retractall(warnaActive(_)),

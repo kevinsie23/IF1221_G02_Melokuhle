@@ -1,0 +1,10 @@
+urutan_pemain:[D,B,C,A].
+giliran:D.
+discard_top:biru-4.
+warna_aktif:biru.
+kartu_D:[biru-9,biru-2,hijau-7,hitam-wild,kuning-reverse,kuning-5,merah-9].
+kartu_B:[kuning-draw_two,kuning-1,biru-3,hijau-3,merah-0,merah-5,hijau-9].
+kartu_C:[merah-8,merah-skip,hitam-wild_draw_four,biru-1,merah-7,merah-1,merah-2].
+kartu_A:[hijau-draw_two,biru-reverse,biru-draw_two,kuning-0,kuning-2,hijau-0,kuning-4].
+arah_permainan:kanan.
+status_UNI:[].

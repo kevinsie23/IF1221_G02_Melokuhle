@@ -1,7 +1,0 @@
-urutan_pemain:[Hanif,Wimar]
-giliran:Wimar
-discard_top:biru-4
-kartu_Hanif:[biru-9]
-kartu_Wimar:[biru-skip,merah-draw_two,kuning-4]
-arah_permainan:kiri
-status_UNI:[Hanif]

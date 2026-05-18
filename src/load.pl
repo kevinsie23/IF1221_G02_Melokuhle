@@ -28,6 +28,7 @@ readAllNames(S, [Nama|T]):-
     skipChar(S, Char, T).
 
 readWord(S, [Char|T]):-
+    \+ peek_code(S, 46),
     \+ peek_code(S, 44),
     \+ peek_code(S, 93), 
     \+ peek_code(S, 10), 
@@ -75,6 +76,15 @@ readCard(S, Warna, Jenis):-
     readWord(S, CharJenis),
     atom_codes(Jenis, CharJenis).
 
+
+
+
+/* ---LOAD WARNA AKTIF--- */
+loadWarnaAktif(S):-
+    skipTeksAwal(S),    
+    readWord(S, CharWarna),
+    atom_codes(Warna, CharWarna),
+    asserta(warnaActive(Warna)).
 
 
 

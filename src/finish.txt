@@ -1,0 +1,8 @@
+urutan_pemain:[A,B].
+giliran:A.
+discard_top:hitam-wild_draw_four.
+warna_aktif:kuning.
+kartu_A:[kuning-9].
+kartu_B:[kuning-5,merah-9,kuning-0,merah-3,kuning-3,merah-0].
+arah_permainan:kanan.
+status_UNI:[].
