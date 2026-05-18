@@ -7,10 +7,9 @@
 
 urutanPemain([]). % Inisialisasi List Urutan Pemain
 startedGame(0).
+startGame:- startedGame(1), !, write('Game sudah dimulai').
 startGame:- 
-    \+ startedGame(1), 
-    retract(startedGame(0)), 
-    assertz(startedGame(1)), !,
+    \+ startedGame(1),!,
     write('Masukkan jumlah pemain: '), read(Num), nl,
     checkPlayerCount(Num), assertz(jumlahPemain(Num)),
     inputName(Num),
@@ -27,10 +26,65 @@ startGame:-
     assertz(idxGiliran(1)),
     assertz(reverseGiliran(1)),
     urutanPemain([Pemain1|_]),
-    write('Giliran '), write(Pemain1), write('.'). 
+    write('Giliran '), write(Pemain1), write('.'),
+    retract(startedGame(0)), 
+    assertz(startedGame(1)). 
+
+% Predikat untuk check apakah list kartu pemain setelah memainkan kartu kosong dan 
+checkEndGame([]):- endGame, !.
+checkEndGame(_):- !.
+
+endGame:- 
+    idxGiliran(X),
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, X, Winner),
+    write('Permainan Selesai! '), write(Winner), write(' menghabiskan semua kartunya!'),
+    write('Berikut perhitungan poin sisa kartu'), nl, 
+    printPoin(1).
 
 
-startGame:- startedGame(1), !, write('Game sudah dimulai').
+printPoin(IdxPlayer):- 
+    jumlahPemain(X), IdxPlayer =< X, !,
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, IdxPlayer, Name),
+    infoPemain(Name, ListKartu),
+    hitungPoinHelper(ListKartu, Poin),
+    printPoinHelper(Name, ListKartu, Poin),
+    retract(infoPemain(Name,_)),
+    assertz(infoPemain(Name,Poin)),
+    Idx is IdxPlayer+1,
+    printPoin(Idx).
+printPoin(_):- !.
+
+printPoinHelper(Name, ListKartu, Poin):- 
+    write(Name), write(':'),
+    printJumlahKartu(ListKartu),
+    write('='),
+    printJumlahPoin(ListKartu),
+    write(' = '), write(Poin), nl.
+
+printJumlahKartu([kartu(Jenis,Warna)|T]):- format(' ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T).
+printJumlahKartuHelper([]):- !.
+printJumlahKartuHelper([kartu(Jenis,Warna)|T]):- format('+ ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T), !.
+
+printJumlahPoin([H|T]):- poinKartu(H,Poin), format(' ~d ', [Poin]), printJumlahPoinHelper(T).
+printJumlahPoinHelper([]):- !.
+printJumlahPoinHelper([H|T]):- poinKartu(H,Poin), format('+ ~d ', [Poin]), printJumlahPoinHelper(T), !.
+
+
+hitungPoinHelper([], 0):- !. 
+hitungPoinHelper(ListKartu, Poin):-
+    deleteAtN(1, ListKartu, Kartu, NewListKartu), poinKartu(Kartu, PoinKartu), 
+    hitungPoinHelper(NewListKartu, PoinNext),
+    Poin is PoinKartu + PoinNext.
+    
+% Predikat menentukan poin sebuah kartu
+poinKartu(kartu(hitam,_), 20):- !.
+poinKartu(kartu(_,Jenis), 10):- isMember(Jenis, [reverse, skip, draw_two]), !.
+poinKartu(kartu(_,Angka), Angka):- !.
+
+
+
 
 checkPlayerCount(X):- X>=2, X=< 4, !.
 checkPlayerCount(_):- write('Mohon masukkan angka antara 2-4.'), nl, startGame.
@@ -145,16 +199,16 @@ initDiscardPile:-
         retract(drawPile(_)),
         assertz(drawPile(NewDrawList)), !.
 
-discardPileTop(DrawList, Card, NewDrawList):- 
-    takeN(1, DrawList, Card, NewDrawList), checkDiscard(Card), !.
+discardPileTop(DrawList, [Card], OutputDrawList):- 
+    takeN(1, DrawList, [DrawnCard], TempDrawList), 
+    validateTop(DrawnCard, TempDrawList, Card, OutputDrawList).
 
-discardPileTop(DrawList, Card, OutputDrawList):- 
-    takeN(1, DrawList, InvalidCard, NewDrawList), 
-    \+ checkDiscard(InvalidCard), !, 
-    appendTail(NewDrawList, InvalidCard, FinalDrawList),
-    discardPileTop(FinalDrawList, Card, OutputDrawList).
-
-
+validateTop(DrawnCard, TempDrawList, DrawnCard, TempDrawList):-
+    checkDiscard(DrawnCard), !.
+validateTop(DrawnCard, TempDeck, Card, OutputDrawList):-
+    \+ checkDiscard(DrawnCard), !,
+    appendTail(DrawnCard, TempDeck, UpdatedDeck),
+    discardPileTop(UpdatedDeck, [Card], OutputDrawList).
 
 checkDiscard(kartu(_, Jenis)):- 
     \+ isMember(Jenis, [wild, wild_draw_four, skip, reverse, draw_two, mimic]), !.
