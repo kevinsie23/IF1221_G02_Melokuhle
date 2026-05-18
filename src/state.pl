@@ -7,8 +7,8 @@ loadGame:-
     retractall(infoPemain(_, _)),
     retractall(idxGiliran(_)),
     retractall(playedDraw),
-    retractall(playedDrawFour),
-    retractall(uniCalled(_)),
+    retractall(eplayedDrawFour),
+    retractall(uniCalled(_)), 
     retractall(drawPile(_)),
     retractall(warnaActive(_)),
     retractall(startedGame(_)),
@@ -25,7 +25,8 @@ loadGame:-
     loadArahPermainan(S),
     loadStatusUni(S),
     close(S),
-    assertz(startedGame(1)).
+    asserta(startedGame(1)),
+    asserta(drawPile([])).
 
 
 

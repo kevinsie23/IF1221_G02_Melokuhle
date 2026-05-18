@@ -17,6 +17,8 @@ loadUrutan(S):-
     skipTeksAwal(S),
     get_code(S, 91),
     readAllNames(S, ListPemain),
+    lengthList(ListPemain, Length),
+    asserta(jumlahPemain(Length)),
     asserta(urutanPemain(ListPemain)).
 
 readAllNames(S, []):- 
