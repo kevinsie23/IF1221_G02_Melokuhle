@@ -38,10 +38,9 @@ endGame:-
     idxGiliran(X),
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, X, Winner),
-    write('Permainan Selesai! '), write(Winner), write(' menghabiskan semua kartunya!'),
+    write('Permainan Selesai! '), write(Winner), write(' menghabiskan semua kartunya! '),
     write('Berikut perhitungan poin sisa kartu'), nl, 
     printPoin(1).
-
 
 printPoin(IdxPlayer):- 
     jumlahPemain(X), IdxPlayer =< X, !,
@@ -58,19 +57,26 @@ printPoin(_):- !.
 
 printPoinHelper(Name, ListKartu, Poin):- 
     write(Name), write(':'),
-    printJumlahKartu(ListKartu),
-    write('='),
-    printJumlahPoin(ListKartu),
-    write(' = '), write(Poin), nl.
+    printJumlahKartu(ListKartu, Poin).
 
-printJumlahKartu([kartu(Jenis,Warna)|T]):- format(' ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T).
+printJumlahKartu([], _):- !, write(' kartu habis = 0 poin'), nl.
+printJumlahKartu([kartu(Jenis,Warna)|T], Poin):- 
+    format(' ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T),
+    write(' = '), printJumlahPoin([kartu(Jenis,Warna)|T]), write('= '), write(Poin), write(' poin'), nl.
+
 printJumlahKartuHelper([]):- !.
-printJumlahKartuHelper([kartu(Jenis,Warna)|T]):- format('+ ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T), !.
+printJumlahKartuHelper([kartu(Jenis,Warna)|T]):- 
+    format('+ ~w-~w ', [Jenis,Warna]), 
+    printJumlahKartuHelper(T), !.
 
-printJumlahPoin([H|T]):- poinKartu(H,Poin), format(' ~d ', [Poin]), printJumlahPoinHelper(T).
+printJumlahPoin([H|T]):- 
+    poinKartu(H,Poin), format(' ~d ', [Poin]), 
+    printJumlahPoinHelper(T).
+
 printJumlahPoinHelper([]):- !.
-printJumlahPoinHelper([H|T]):- poinKartu(H,Poin), format('+ ~d ', [Poin]), printJumlahPoinHelper(T), !.
-
+printJumlahPoinHelper([H|T]):- 
+    poinKartu(H,Poin), format('+ ~d ', [Poin]), 
+    printJumlahPoinHelper(T), !.
 
 hitungPoinHelper([], 0):- !. 
 hitungPoinHelper(ListKartu, Poin):-
