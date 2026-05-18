@@ -1,5 +1,5 @@
 urutan_pemain:[A,B].
-giliran:A.
+giliran:B.
 discard_top:hitam-wild_draw_four.
 warna_aktif:kuning.
 kartu_A:[kuning-9].

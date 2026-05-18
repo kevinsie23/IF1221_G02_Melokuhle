@@ -122,17 +122,44 @@ printUni(CurNo, NextNo):-
     NextNo is CurNo + 1.
 printUni(CurNo, NextNo):-
     checkUni(Length),
-    Length > 1, !,
+    Length \== 2, !,
     NextNo is CurNo.
 
-/*Print tangkap hanya jika pemain sebelumnya belum memanggil uni*/
+/*Print tangkap hanya jika ada pemain yang tinggal 1 kartu tapi belum memanggil uni*/
 printTangkap(CurNo, NextNo):-
-    uniCalled(_),
+    checkTangkap(Total),
+    Total > 0,
     format('~w. tangkap', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printTangkap(CurNo, NextNo):-
-    \+ uniCalled(_), !,
+    checkTangkap(Total),
+    Total =:= 0, !,
     NextNo is CurNo.
+
+
+checkTangkap(Total):-
+    urutanPemain(ListPemain),
+    idxGiliran(Giliran),
+    grabNamaPemain(ListPemain, Giliran, Nama),
+    checkTiapTangkap(ListPemain, Nama, Total).
+
+
+checkTiapTangkap([], _, 0).
+checkTiapTangkap([H|T], Nama, Total):-
+    H == Nama,
+    checkTiapTangkap(T, Nama, Total).
+
+checkTiapTangkap([H|T], Nama, Total):-
+    H \== Nama,
+    infoPemain(H, ListKartu),
+    lengthList(ListKartu, Length),
+    checkLength(Length, Possible),
+    checkTiapTangkap(T, Nama, NewTotal),
+    Total is Possible + NewTotal.
+
+checkLength(1, 1):- !.
+checkLength(_, 0).
+
 
 /* ---Helper Predikat: Print semua aksi pendukung--- */
 printAksiPendukung:-
