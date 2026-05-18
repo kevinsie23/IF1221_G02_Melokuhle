@@ -40,7 +40,11 @@ endGame:-
     getElementAtIndex(ListPemain, X, Winner),
     write('Permainan Selesai! '), write(Winner), write(' menghabiskan semua kartunya! '),
     write('Berikut perhitungan poin sisa kartu'), nl, 
-    printPoin(1).
+    printPoin(1), nl, 
+    printRanking, 
+    format('Selamat, ~w menjadi pemenang', [Winner]),
+    retractall(startedGame(_)),
+    assertz(startedGame(0)), !.
 
 printPoin(IdxPlayer):- 
     jumlahPemain(X), IdxPlayer =< X, !,
@@ -89,8 +93,32 @@ poinKartu(kartu(hitam,_), 20):- !.
 poinKartu(kartu(_,Jenis), 10):- isMember(Jenis, [reverse, skip, draw_two]), !.
 poinKartu(kartu(_,Angka), Angka):- !.
 
+printRanking:- 
+    urutanPemain(ListPemain),
+    insertSort(ListPemain, Ranked),
+    write('Urutan Pemenang:'), nl,
+    printRankingHelper(Ranked, 1).
+
+printRankingHelper([],_):- !.
+printRankingHelper(_,Count):- jumlahPemain(X), Count > X, !.
+printRankingHelper([H|T], Count):- 
+    jumlahPemain(X),
+    Count =< X, !,
+    infoPemain(H, Poin),
+    format('~d. ~w (~d poin)~n',[Count, H, Poin]),
+    NewCount is Count+1,
+    printRankingHelper(T, NewCount).
 
 
+
+insertSort([],[]):- !.
+insertSort([H|T], Sorted) :- 
+    insertSort(T, SortedTail),
+    insert(H, SortedTail, Sorted).
+
+insert(X,[],[X]).
+insert(X, [H|T], [X, H|T]) :- infoPemain(X,PoinX), infoPemain(H, PoinH), PoinX =< PoinH, !.
+insert(X, [H|T], [H|Result]):- infoPemain(X,PoinX), infoPemain(H, PoinH), PoinX > PoinH, !, insert(X, T, Result).
 
 checkPlayerCount(X):- X>=2, X=< 4, !.
 checkPlayerCount(_):- write('Mohon masukkan angka antara 2-4.'), nl, startGame.
