@@ -71,6 +71,12 @@ giveNCard(NamaPemain, N) :-
     NewN is N - 1,
     giveNCard(NamaPemain, NewN).
 
+playCard(NamaPemain, IdxKartu) :-
+    infoPemain(NamaPemain, ListKartu),
+    lengthList(ListKartu, LengthKartu),
+    IdxKartu > LengthKartu, 
+    write('Indeks kartu tidak valid!'), nl, !.
+
 playCard(NamaPemain, IdxKartu) :-                           % Case if kartu is not matched with on the discard
     discardPile([kartu(_, AngkaDiscard) | _]),
     returnCard(NamaPemain, IdxKartu, kartu(Warna, Angka)),
