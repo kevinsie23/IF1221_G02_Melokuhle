@@ -10,8 +10,8 @@ startedGame(0).
 startGame:- startedGame(1), !, write('Game sudah dimulai').
 startGame:- 
     \+ startedGame(1),!,
-    write('Masukkan jumlah pemain: '), read(Num), nl,
-    checkPlayerCount(Num), assertz(jumlahPemain(Num)),
+    getPlayerCount(Num),
+    assertz(jumlahPemain(Num)),
     inputName(Num),
     randomiseOrder, 
     printOrder,
@@ -120,8 +120,14 @@ insert(X,[],[X]).
 insert(X, [H|T], [X, H|T]) :- infoPemain(X,PoinX), infoPemain(H, PoinH), PoinX =< PoinH, !.
 insert(X, [H|T], [H|Result]):- infoPemain(X,PoinX), infoPemain(H, PoinH), PoinX > PoinH, !, insert(X, T, Result).
 
-checkPlayerCount(X):- X>=2, X=< 4, !.
-checkPlayerCount(_):- write('Mohon masukkan angka antara 2-4.'), nl, startGame.
+
+getPlayerCount(Num):- 
+    write('Masukkan jumlah pemain: '), 
+    read(X), nl,
+    checkPlayerCount(X,Num).
+
+checkPlayerCount(X,X):- X>=2, X=< 4, !.
+checkPlayerCount(_,Num):- write('Mohon masukkan angka antara 2-4.'), nl, getPlayerCount(Num).
 
 inputName(PlayerNumber):- inputNameHelper(PlayerNumber,1).
 
@@ -130,7 +136,7 @@ inputNameHelper(0,_):- !.
 % Case Sucess
 inputNameHelper(X,Count):- 
     X>0,
-    write('Masukkan Name pemain '), write(Count), write(': '),
+    write('Masukkan Nama pemain '), write(Count), write(': '),
     read(Name),
     urutanPemain(List),
     \+ isMember(Name, List), !,  % Cek apakah Name ada di List urutan pemain
@@ -142,7 +148,7 @@ inputNameHelper(X,Count):-
 % Case Fail
 inputNameHelper(X,Count):- 
     X>0,
-    write('Name sudah digunakan. Masukkan Name lain:  '), 
+    write('Name sudah digunakan. Masukkan Nama lain:  '), 
     retryInput(X,Count).
 
 % retryInput Sucess

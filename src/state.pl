@@ -93,6 +93,7 @@ printAksiUtama(No):-
 /*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
 printMainkanKartu(CurNo, NextNo):-
     \+ playedDraw,
+    \+ playedDrawFour,
     format('~w. mainkanKartu', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printMainkanKartu(CurNo, NextNo):-

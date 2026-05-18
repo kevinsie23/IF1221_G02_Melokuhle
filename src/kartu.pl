@@ -80,6 +80,7 @@ playCard(NamaPemain, IdxKartu) :-
     assertz(infoPemain(NamaPemain, NewListKartu)),
     retract(discardPile(_)),
     assertz(discardPile(NewListDiscard)), 
+    checkEndGame(NewListKartu), % CHECKER ENDGAME
     nextGiliran, !.
 
 /* Helper Rules */
