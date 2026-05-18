@@ -99,6 +99,7 @@ initDrawPile:-
     close(Stream).
 initDrawPileHelper(Stream, ListKartu):- 
     at_end_of_stream(Stream), !, 
+    retractall(drawPile(_)),
     assertz(drawPile(ListKartu)).
 
 initDrawPileHelper(Stream, List):-
