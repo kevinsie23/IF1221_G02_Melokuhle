@@ -13,7 +13,10 @@ mainkanKartu(IdxKartu) :-
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
-    playCard(NamaPemain, IdxKartu), !.
+    playCard(NamaPemain, IdxKartu), 
+    idxGiliran(NextGiliran),
+    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
+    write('Giliran '), write(NextPemain), nl, !.
 
 ambilKartu :-
     playedDraw,
@@ -23,7 +26,10 @@ ambilKartu :-
     giveNCard(NamaPemain, 2),
     retractall(playedDraw),
     retractall(playedDrawFour),
-    nextGiliran, !. 
+    nextGiliran, 
+    idxGiliran(NextGiliran),
+    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
+    write('Giliran '), write(NextPemain), nl, !. 
 
 ambilKartu :-
     playedDrawFour,
@@ -33,7 +39,10 @@ ambilKartu :-
     giveNCard(NamaPemain, 4),
     retractall(playedDraw),
     retractall(playedDrawFour),
-    nextGiliran, !.   
+    nextGiliran,
+    idxGiliran(NextGiliran),
+    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
+    write('Giliran '), write(NextPemain), nl, !.   
 
 ambilKartu :-
     \+ playedDraw,
@@ -42,12 +51,16 @@ ambilKartu :-
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     giveNCard(NamaPemain, 1),
-    nextGiliran, !.
+    nextGiliran, 
+    idxGiliran(NextGiliran),
+    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
+    write('Giliran '), write(NextPemain), nl,!.
 
 /* Main Rules */
 giveNCard(_, 0) :- !.                                   % Base Case
 giveNCard(NamaPemain, N) :-
     N > 0,
+    checkDrawEmpty(N), 
     infoPemain(NamaPemain, ListKartu),
     drawPile([H | T]),
     retract(drawPile(_)),
@@ -102,13 +115,18 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk re
     retract(reverseGiliran(_)),
     assertz(reverseGiliran(NewReverseGiliran)), 
     retractall(warnaActive(_)),
-    assertz(warnaActive(Warna)), !.
+    assertz(warnaActive(Warna)), 
+    write('Kartu reverse dimainkan!'), nl, !.
 
 useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk skip
     Angka = skip,
     nextGiliran, 
     retractall(warnaActive(_)),
-    assertz(warnaActive(Warna)),!.
+    assertz(warnaActive(Warna)),
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain), 
+    write('Kartu skip dimainkan!, Giliran '), write(NamaPemain), write(' diskip'), nl, !.
 
 useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk draw_two
     Angka = draw_two,
@@ -143,3 +161,12 @@ nextGiliran :-
     NewGiliran is ((Giliran + GiliranIncrement - 1) mod JumlahPemain) + 1, 
     retract(idxGiliran(_)),
     assertz(idxGiliran(NewGiliran)), !.
+
+checkDrawEmpty(N) :-                            % Init draw pile jika draw pile kurang
+    drawPile(ListDraw),
+    lengthList(ListDraw, Length),
+    N > Length, initDrawPile, !.
+checkDrawEmpty(N) :-
+    drawPile(ListDraw),
+    lengthList(ListDraw, Length),
+    N =< Length, !.
