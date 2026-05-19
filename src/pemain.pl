@@ -85,3 +85,61 @@ tangkap(Nama):-
 % Input nama invalid
 tangkap(_):-
     write('Nama ditemukan. Jalankan ulang perintah dengan nama yang valid'), nl, !.
+
+%tantang
+tantang :-
+    playedDrawFour,
+    getPrevPlayer(PrevPemain),
+    cekValidDrawFour(PrevPemain, Hasil),
+    Hasil =:= 0,
+    giveNCard(PrevPemain, 4),
+    retractall(playedDrawFour),
+    write('Tantangan berhasil! '), write(PrevPemain), 
+    write(' mendapatkan 4 kartu'), nl, !.
+
+tantang :-
+    playedDrawFour,
+    getPrevPlayer(PrevPemain),
+    cekValidDrawFour(PrevPemain, Hasil),
+    Hasil =:= 1,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, CurrPemain),
+    giveNCard(CurrPemain, 6),
+    retractall(playedDrawFour),
+    write('Tantangan tidak berhasil! '), write(CurrPemain), 
+    write(' mendapatkan 6 kartu'), !.
+
+cekValidDrawFour(NamaPemain, Hasil) :-            % Hasil 0 jika draw four tidak valid, 1 jika valid.
+    cekValidDrawFourHelper(NamaPemain, 1, Hasil).
+
+cekValidDrawFourHelper(NamaPemain, Idx, 1) :-
+    infoPemain(NamaPemain, ListKartu),
+    lengthList(ListKartu, Length),
+    Idx > Length, !.
+cekValidDrawFourHelper(NamaPemain, Idx, 0) :-
+    infoPemain(NamaPemain, ListKartu),
+    getElementAtIndex(ListKartu, Idx, kartu(Warna, Angka)),
+    discardPile([_ | TDiscard]),
+    head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
+    (Warna = WarnaDiscard ; Angka = AngkaDiscard ; 
+    (Angka = wild, AngkaDiscard \= wild)), !.
+cekValidDrawFourHelper(NamaPemain, Idx, Hasil) :-
+    infoPemain(NamaPemain, ListKartu),
+    lengthList(ListKartu, Length),
+    Idx =< Length,
+    getElementAtIndex(ListKartu, Idx, kartu(Warna, Angka)),
+    discardPile([_ | TDiscard]),
+    head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
+    (\+ (Warna = WarnaDiscard ; Angka = AngkaDiscard ; 
+    (Angka = wild, AngkaDiscard \= wild)) ; Angka = wild_draw_four), 
+    !, NextIdx is Idx + 1,
+    cekValidDrawFourHelper(NamaPemain, NextIdx, Hasil).
+
+getPrevPlayer(NamaPemain) :-
+    idxGiliran(Giliran),
+    reverseGiliran(ArahGiliran),
+    jumlahPemain(JumlahPemain),
+    PrevGiliran is ((Giliran + (ArahGiliran * -1) - 1) mod JumlahPemain) + 1, 
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, PrevGiliran, NamaPemain).
