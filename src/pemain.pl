@@ -29,9 +29,6 @@ uni(IdxKartu):-
     asserta(uniCalled(Nama)),
     unikanKartu(IdxKartu, Nama).
 
-
-
-
 unikanKartu(_, Nama) :-
     playedDraw,
     retract(uniCalled(Nama)),
@@ -47,3 +44,44 @@ unikanKartu(IdxKartu, Nama) :-
     \+ playedDrawFour,
     format('~w menyerukan UNI!', [Nama]),
     playCard(Nama, IdxKartu), !.
+
+% Benar jika Pemain mengikuti aturan 
+% yaitu kartu lebih dari satu atau sudah memanggil uni
+checkAturanTangkap(Nama):- 
+    infoPemain(Nama, List), lengthList(List, L), L > 1, !.
+checkAturanTangkap(Nama):- uniCalled(Nama), !.
+
+% Tangkap diri sendiri
+tangkap(Nama):- 
+    idxGiliran(Idx), urutanPemain(Giliran),
+    getElementAtIndex(Giliran, Idx, Pemain), Nama == Pemain, !,
+    write('Tidak dapat menangkap diri sendiri. Gunakan nama pemain lain yang valid'), nl.
+
+% Tangkap Gagal pemain diberi sanksi
+tangkap(Nama):-
+    % Sudah uni atau kartu lebih dari 1
+    checkAturanTangkap(Nama), !,
+
+    % Yang memanggil diberi
+    urutanPemain(Giliran),
+    idxGiliran(Idx), getElementAtIndex(Giliran, Idx, Pemain),
+    giveNCard(Pemain,1), 
+    format('~w tidak melanggar aturan~n', [Nama]),
+    format('~w mendapat 1 kartu pinalti', [Pemain]),
+    nextGiliran, 
+    printGiliran, !.
+
+% Tangkap Sukses
+tangkap(Nama):-
+    \+ checkAturanTangkap(Nama),
+
+    % Nama diberi sanksi 2 kartu
+    giveNCard(Nama, 2),
+    format('~w tertangkap tidak menyeruhkan UNI~n', [Nama]),
+    format('~w mendapat 2 kartu pinalti~n', [Nama]),
+    nextGiliran, 
+    printGiliran, !.
+
+% Input nama invalid
+tangkap(_):-
+    write('Nama ditemukan. Jalankan ulang perintah dengan nama yang valid'), nl, !.
