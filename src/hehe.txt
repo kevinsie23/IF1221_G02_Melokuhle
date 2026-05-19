@@ -1,9 +1,0 @@
-urutan_pemain:[J,A,F].
-giliran:A.
-discard_top:hitam-wild.
-warna_aktif:kuning.
-kartu_J:[kuning-9,biru-8,biru-1,hijau-6,kuning-reverse,kuning-4].
-kartu_A:[merah-9,kuning-draw_two,kuning-1,biru-2,hijau-2,merah-0,merah-5].
-kartu_F:[hijau-8,merah-8,merah-skip,hitam-wild_draw_four,biru-0,merah-6,merah-1].
-arah_permainan:kanan.
-status_UNI:[].
