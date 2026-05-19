@@ -32,7 +32,7 @@ startGame:-
 
 % Predikat untuk check apakah list kartu pemain setelah memainkan kartu kosong dan 
 checkEndGame([]):- endGame, !.
-checkEndGame(_):- !.
+checkEndGame(_):- printGiliran, !.
 
 endGame:- 
     idxGiliran(X),

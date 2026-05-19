@@ -13,8 +13,7 @@ mainkanKartu(IdxKartu) :-
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
-    playCard(NamaPemain, IdxKartu), 
-    printGiliran, !.
+    playCard(NamaPemain, IdxKartu), !.
 
 ambilKartu :-
     playedDraw,
@@ -91,8 +90,8 @@ playCard(NamaPemain, IdxKartu) :-
     assertz(infoPemain(NamaPemain, NewListKartu)),
     retract(discardPile(_)),
     assertz(discardPile(NewListDiscard)), 
-    checkEndGame(NewListKartu), % CHECKER ENDGAME
-    nextGiliran, !.
+    nextGiliran, 
+    checkEndGame(NewListKartu), !.
 
 /* Helper Rules */
 returnCard(NamaPemain, IdxKartu, Kartu) :-
