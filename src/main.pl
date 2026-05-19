@@ -124,13 +124,13 @@ insert(X, [H|T], [H|Result]):- infoPemain(X,PoinX), infoPemain(H, PoinH), PoinX 
 
 getPlayerCount(Num):- 
     write('Masukkan jumlah pemain: '), 
-    read(X), nl,
-    checkPlayerCount(X).
+    read(Input), nl,
+    checkPlayerCount(Input, Num).
 
-checkPlayerCount(2):- !.
-checkPlayerCount(3):- !.
-checkPlayerCount(4):- !.
-checkPlayerCount(_):- write('Mohon masukkan angka antara 2-4.'), nl, getPlayerCount(Num).
+checkPlayerCount(2,2):- !.
+checkPlayerCount(3,3):- !.
+checkPlayerCount(4,4):- !.
+checkPlayerCount(_,Num):- write('Mohon masukkan angka antara 2-4.'), nl, getPlayerCount(Num).
 
 inputName(PlayerNumber):- inputNameHelper(PlayerNumber,1).
 
