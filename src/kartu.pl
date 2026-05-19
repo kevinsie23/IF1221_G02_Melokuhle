@@ -23,6 +23,7 @@ ambilKartu :-
     giveNCard(NamaPemain, 2),
     retractall(playedDraw),
     retractall(playedDrawFour),
+    checkUni(NamaPemain),
     nextGiliran, 
     printGiliran, !. 
 
@@ -34,6 +35,7 @@ ambilKartu :-
     giveNCard(NamaPemain, 4),
     retractall(playedDraw),
     retractall(playedDrawFour),
+    checkUni(NamaPemain),
     nextGiliran,
     printGiliran, !.   
 
@@ -44,8 +46,10 @@ ambilKartu :-
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     giveNCard(NamaPemain, 1),
+    checkUni(NamaPemain),
     nextGiliran, 
     printGiliran, !.
+
 
 /* Main Rules */
 giveNCard(_, 0) :- !.                                   % Base Case
@@ -94,6 +98,13 @@ playCard(NamaPemain, IdxKartu) :-
     checkEndGame(NewListKartu), !.
 
 /* Helper Rules */
+checkUni(NamaPemain):-
+    uniCalled(NamaPemain), !,
+    retract(uniCalled(NamaPemain)).
+
+checkUni(NamaPemain):-
+    \+ uniCalled(NamaPemain), !.
+
 returnCard(NamaPemain, IdxKartu, Kartu) :-
     infoPemain(NamaPemain, ListKartu),
     getElementAtIndex(ListKartu, IdxKartu, Kartu).

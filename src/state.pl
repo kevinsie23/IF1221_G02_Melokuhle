@@ -98,7 +98,10 @@ printMainkanKartu(CurNo, NextNo):-
     format('~w. mainkanKartu', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printMainkanKartu(CurNo, NextNo):-
-    playedDraw, !,
+    playedDraw,
+    NextNo is CurNo.
+printMainkanKartu(CurNo, NextNo):-
+    playedDrawFour,
     NextNo is CurNo.
 
 /*Print ambilKartu dalam state apapun*/
@@ -117,24 +120,29 @@ printTantang(CurNo, NextNo):-
 
 /*Print uni hanya jika kartu di tangan tersisa 1*/
 printUni(CurNo, NextNo):-
-    checkUni(Length),
-    Length =:= 2,
+    \+ playedDraw,
+    \+ playedDrawFour,
     format('~w. uni', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printUni(CurNo, NextNo):-
-    checkUni(Length),
-    Length \== 2, !,
+    playedDraw,
     NextNo is CurNo.
+printUni(CurNo, NextNo):-
+    playedDrawFour,
+    NextNo is CurNo.
+
 
 /*Print tangkap hanya jika ada pemain yang tinggal 1 kartu tapi belum memanggil uni*/
 printTangkap(CurNo, NextNo):-
-    checkTangkap(Total),
-    Total > 0,
+    \+ playedDraw,
+    \+ playedDrawFour,
     format('~w. tangkap', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printTangkap(CurNo, NextNo):-
-    checkTangkap(Total),
-    Total =:= 0, !,
+    playedDraw,
+    NextNo is CurNo.
+printTangkap(CurNo, NextNo):-
+    playedDrawFour,
     NextNo is CurNo.
 
 
@@ -168,14 +176,6 @@ printAksiPendukung:-
     write('2. lihatKartu'), nl,
     write('3. cekInfo'), nl.
 
-
-/* -----Helper Predikat: Menghitung jumlah kartu pemain----- */
-checkUni(Length):-
-    urutanPemain(ListPemain),
-    idxGiliran(Giliran),
-    grabNamaPemain(ListPemain, Giliran, Nama),
-    infoPemain(Nama, ListKartu),
-    lengthList(ListKartu, Length).
 
 
 /* -----Helper Predikat: Mengambil pemain sesuai giliran----- */

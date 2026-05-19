@@ -4,6 +4,7 @@
 :- include('state.pl').
 :- include('kartu.pl').
 :- include('util.pl').
+:- include('pemain.pl').
 
 urutanPemain([]). % Inisialisasi List Urutan Pemain
 startedGame(0).
