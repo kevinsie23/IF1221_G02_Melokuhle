@@ -53,3 +53,16 @@ printCard(Warna, Jenis):- format('~w-~w~n', [Warna,Jenis]).
 % isMember --> Lihat apakah X ada di List
 isMember(X, [X|_]):- !.
 isMember(X, [_|T]):- isMember(X,T).
+
+
+
+/* ---UBAH INPUT MENJADI .TXT--- */
+toTxt(Name, File):-
+    atom_codes(Name, Codes),
+    addTxt(Codes, [46, 116, 120, 116], FileCodes),
+    atom_codes(File, FileCodes).
+
+
+addTxt([], CodeList, CodeList).
+addTxt([H|T], CodeList, [H|T2]):-
+    addTxt(T, CodeList, T2).

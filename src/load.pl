@@ -10,8 +10,6 @@ cekChar(S, Char):-
 
 
 
-
-
 /* ---LOAD URUTAN--- */
 loadUrutan(S):-
     skipTeksAwal(S),

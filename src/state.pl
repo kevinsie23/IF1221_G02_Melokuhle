@@ -14,8 +14,9 @@ loadGame:-
     retractall(startedGame(_)),
 
     write('Masukkan nama file yang akan dimuat: '),
-    read(FileName),
-    open(FileName, read, S),
+    read(Name),
+    toTxt(Name, File),
+    open(File, read, S),
 
     loadUrutan(S),
     loadGiliran(S),
@@ -35,8 +36,9 @@ loadGame:-
 /* -----SAVE GAME----- */
 saveGame:-
     write('Masukkan nama file penyimpanan: '),
-    read(FileName),
-    open(FileName, write, S),
+    read(Name),
+    toTxt(Name, File),
+    open(File, write, S),
     
     writeUrutan(S),
     writeGiliran(S),
