@@ -100,10 +100,10 @@ printMainkanKartu(CurNo, NextNo):-
     format('~w. mainkanKartu', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printMainkanKartu(CurNo, NextNo):-
-    playedDraw,
+    playedDraw, !,
     NextNo is CurNo.
 printMainkanKartu(CurNo, NextNo):-
-    playedDrawFour,
+    playedDrawFour, !,
     NextNo is CurNo.
 
 /*Print ambilKartu dalam state apapun*/
@@ -127,10 +127,10 @@ printUni(CurNo, NextNo):-
     format('~w. uni', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printUni(CurNo, NextNo):-
-    playedDraw,
+    playedDraw, !,
     NextNo is CurNo.
 printUni(CurNo, NextNo):-
-    playedDrawFour,
+    playedDrawFour, !,
     NextNo is CurNo.
 
 
@@ -141,10 +141,10 @@ printTangkap(CurNo, NextNo):-
     format('~w. tangkap', [CurNo]), nl, !,
     NextNo is CurNo + 1.
 printTangkap(CurNo, NextNo):-
-    playedDraw,
+    playedDraw, !,
     NextNo is CurNo.
 printTangkap(CurNo, NextNo):-
-    playedDrawFour,
+    playedDrawFour, !,
     NextNo is CurNo.
 
 
