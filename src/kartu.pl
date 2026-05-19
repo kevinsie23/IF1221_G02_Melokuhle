@@ -93,8 +93,7 @@ playCard(NamaPemain, IdxKartu) :-
     retract(infoPemain(NamaPemain, _)),
     assertz(infoPemain(NamaPemain, NewListKartu)),
     retract(discardPile(_)),
-    assertz(discardPile(NewListDiscard)), 
-    nextGiliran, 
+    assertz(discardPile(NewListDiscard)),  
     checkEndGame(NewListKartu), !.
 
 /* Helper Rules */
