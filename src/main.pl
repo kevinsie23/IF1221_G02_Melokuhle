@@ -54,7 +54,7 @@ printPoin(IdxPlayer):-
     infoPemain(Name, ListKartu),
     hitungPoinHelper(ListKartu, Poin),
     printPoinHelper(Name, ListKartu, Poin),
-    retract(infoPemain(Name,_)),
+    retractall(infoPemain(Name, _)), 
     assertz(infoPemain(Name,Poin)),
     Idx is IdxPlayer+1,
     printPoin(Idx).
@@ -65,13 +65,13 @@ printPoinHelper(Name, ListKartu, Poin):-
     printJumlahKartu(ListKartu, Poin).
 
 printJumlahKartu([], _):- !, write(' kartu habis = 0 poin'), nl.
-printJumlahKartu([kartu(Jenis,Warna)|T], Poin):- 
-    format(' ~w-~w ', [Jenis,Warna]), printJumlahKartuHelper(T),
-    write(' = '), printJumlahPoin([kartu(Jenis,Warna)|T]), write('= '), write(Poin), write(' poin'), nl.
+printJumlahKartu([kartu(Warna,Jenis)|T], Poin):- 
+    format(' ~w-~w ', [Warna,Jenis]), printJumlahKartuHelper(T),
+    write(' = '), printJumlahPoin([kartu(Warna,Jenis)|T]), write('= '), write(Poin), write(' poin'), nl.
 
 printJumlahKartuHelper([]):- !.
-printJumlahKartuHelper([kartu(Jenis,Warna)|T]):- 
-    format('+ ~w-~w ', [Jenis,Warna]), 
+printJumlahKartuHelper([kartu(Warna,Jenis)|T]):- 
+    format('+ ~w-~w ', [Warna,Jenis]), 
     printJumlahKartuHelper(T), !.
 
 printJumlahPoin([H|T]):- 
