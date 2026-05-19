@@ -14,9 +14,7 @@ mainkanKartu(IdxKartu) :-
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     playCard(NamaPemain, IdxKartu), 
-    idxGiliran(NextGiliran),
-    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
-    write('Giliran '), write(NextPemain), nl, !.
+    printGiliran, !.
 
 ambilKartu :-
     playedDraw,
@@ -27,9 +25,7 @@ ambilKartu :-
     retractall(playedDraw),
     retractall(playedDrawFour),
     nextGiliran, 
-    idxGiliran(NextGiliran),
-    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
-    write('Giliran '), write(NextPemain), nl, !. 
+    printGiliran, !. 
 
 ambilKartu :-
     playedDrawFour,
@@ -40,9 +36,7 @@ ambilKartu :-
     retractall(playedDraw),
     retractall(playedDrawFour),
     nextGiliran,
-    idxGiliran(NextGiliran),
-    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
-    write('Giliran '), write(NextPemain), nl, !.   
+    printGiliran, !.   
 
 ambilKartu :-
     \+ playedDraw,
@@ -52,9 +46,7 @@ ambilKartu :-
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     giveNCard(NamaPemain, 1),
     nextGiliran, 
-    idxGiliran(NextGiliran),
-    getElementAtIndex(ListPemain, NextGiliran, NextPemain), nl,
-    write('Giliran '), write(NextPemain), nl,!.
+    printGiliran, !.
 
 /* Main Rules */
 giveNCard(_, 0) :- !.                                   % Base Case
@@ -176,3 +168,11 @@ checkDrawEmpty(N) :-
     drawPile(ListDraw),
     lengthList(ListDraw, Length),
     N =< Length, !.
+
+printGiliran :-
+    discardPile([kartu(Warna, Angka) | _]),
+    urutanPemain(ListPemain),
+    idxGiliran(Giliran),
+    getElementAtIndex(ListPemain, Giliran, Pemain), nl,
+    write('Giliran '), write(Pemain), nl,
+    write('Kartu discard top: '), write(Warna-Angka), nl, !.
