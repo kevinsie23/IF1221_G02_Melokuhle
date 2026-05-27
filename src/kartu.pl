@@ -94,9 +94,42 @@ playCard(NamaPemain, IdxKartu) :-
     assertz(infoPemain(NamaPemain, NewListKartu)),
     retract(discardPile(_)),
     assertz(discardPile(NewListDiscard)),  
+    shiftHide(IdxKartu),
+    lengthList(NewListKartu, Length),
+    checkLength(Length),
     checkEndGame(NewListKartu), !.
 
 /* Helper Rules */
+
+shiftHide(_):-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    \+ hide(NamaPemain, _), !.
+shiftHide(IdxKartu):-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    hide(NamaPemain, IdxHideKartu),
+    IdxKartu < IdxHideKartu, !,
+    NewIdxHideKartu is IdxHideKartu - 1,
+    retract(hide(NamaPemain, IdxHideKartu)),
+    assertz(hide(NamaPemain, NewIdxHideKartu)).
+shiftHide(IdxKartu):-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    hide(NamaPemain, IdxHideKartu),
+    IdxKartu =:= IdxHideKartu, !,
+    retract(hide(NamaPemain, IdxKartu)).
+shiftHide(IdxKartu):-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    hide(NamaPemain, IdxHideKartu),
+    IdxKartu >= IdxHideKartu, !.
+
+
 checkUni(NamaPemain):-
     uniCalled(NamaPemain), !,
     retract(uniCalled(NamaPemain)).

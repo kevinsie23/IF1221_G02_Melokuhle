@@ -110,6 +110,9 @@ mergeNameList(S, [H|T]):-
     get_code(S, 91),
     readAllCards(S, ListKartu),
     asserta(infoPemain(H, ListKartu)),
+    skipTeksAwal(S),
+    read(S, IdxKartu),
+    cekHide(H, IdxKartu),
     mergeNameList(S, T).
     
 readAllCards(S, []):- 
@@ -123,6 +126,11 @@ skipCharCards(_, 93, []):- !.
 skipCharCards(S, 44, T):-
     readAllCards(S, T).
 
+cekHide(H, IdxKartu):-
+    IdxKartu > 0,
+    assertz(hide(H, IdxKartu)), !.
+cekHide(_, IdxKartu):-
+    IdxKartu =:= 0, !.
 
 
 

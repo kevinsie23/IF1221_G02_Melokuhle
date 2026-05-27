@@ -12,6 +12,7 @@ loadGame:-
     retractall(drawPile(_)),
     retractall(warnaActive(_)),
     retractall(startedGame(_)),
+    retractall(hide(_, _)),
 
     write('Masukkan nama file yang akan dimuat: '),
     read(Name),
@@ -26,6 +27,13 @@ loadGame:-
     loadStatusUni(S),
     loadKartuPemain(S),
     close(S),
+
+    urutanPemain(ListPemain),
+    idxGiliran(Giliran),
+    grabNamaPemain(ListPemain, Giliran, Nama),
+    format('Status permainan berhasil dimuat dari ~w.~n', [File]),
+    format('Melanjutkan giliran ~w.~n', [Nama]),
+
     asserta(startedGame(1)),
     asserta(drawPile([])).
 
@@ -36,7 +44,8 @@ loadGame:-
 /* -----SAVE GAME----- */
 saveGame:-
     \+ playedDraw,
-    \+ playedDrawFour, !,
+    \+ playedDrawFour, 
+    startedGame(1), !,
     write('Masukkan nama file penyimpanan: '),
     read(Name),
     toTxt(Name, File),
@@ -49,22 +58,27 @@ saveGame:-
     writeArahPermainan(S),
     writeStatusUni(S),
     writeKartuPemain(S),
-    close(S).
+    close(S),
 
+    format('Status permainan berhasil disimpan ke ~w.~n', [File]).
+
+saveGame:-
+    startedGame(0), !,
+    write('Tidak dapat melakukan save karena permainan belum dimulai.'), nl.
 
 saveGame:-
     playedDraw, !,
     idxGiliran(Giliran),
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, Giliran, Nama),
-    format('~w terkena draw_two dan harus melakukan aksi ambilKartu dulu.', [Nama]).
+    format('~w terkena draw_two dan harus melakukan aksi ambilKartu terlebih dahulu.', [Nama]).
 
 saveGame:-
     playedDrawFour, !,
     idxGiliran(Giliran),
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, Giliran, Nama),
-    format('~w terkena draw_four dan harus melakukan aksi ambilKartu dulu.', [Nama]).
+    format('~w terkena draw_four dan harus melakukan aksi ambilKartu atau tantang terlebih dahulu.', [Nama]).
 
 
 
@@ -76,15 +90,27 @@ lihatKartu:-
     idxGiliran(Giliran),
     grabNamaPemain(ListPemain, Giliran, Nama),
     infoPemain(Nama, ListKartu),    
-    printListKartuPemain(ListKartu, 1).
+    printListKartuPemain(Nama, ListKartu, 1).
 
 /* ---Helper Predikat: Print Kartu Pemain sesuai Urutan--- */
-printListKartuPemain([], _):- !.
-printListKartuPemain([kartu(Warna, Jenis)|T], No):-
+printListKartuPemain(_, [], _):- !.
+printListKartuPemain(Nama, [kartu(Warna, Jenis)|T], No):-
+    hide(Nama, IdxKartu),
+    IdxKartu =:= No,
+    format('~w. ~w-~w (disembunyikan)', [No, Warna, Jenis]), nl,
+    NextNo is No + 1,
+    printListKartuPemain(Nama, T, NextNo), !.
+printListKartuPemain(Nama, [kartu(Warna, Jenis)|T], No):-
+    hide(Nama, IdxKartu),
+    IdxKartu =\= No,
     format('~w. ~w-~w', [No, Warna, Jenis]), nl,
     NextNo is No + 1,
-    printListKartuPemain(T, NextNo).
-
+    printListKartuPemain(Nama, T, NextNo), !.
+printListKartuPemain(Nama, [kartu(Warna, Jenis)|T], No):-
+    \+ hide(Nama, _),
+    format('~w. ~w-~w', [No, Warna, Jenis]), nl,
+    NextNo is No + 1,
+    printListKartuPemain(Nama, T, NextNo), ! .
 
 
 
@@ -226,6 +252,16 @@ printInfoPemain:-
     printNamaJumlahKartu(ListPemain, 1).
 
 printNamaJumlahKartu([H], NoUrut):-
+    hide(H, _), !,
+    infoPemain(H, ListKartu),
+    lengthList(ListKartu, Length),
+    format('Nama pemain ~w: ~w', [NoUrut, H]),
+    nl,
+    HideLength is Length - 1,
+    format('Jumlah kartu: ~w', [HideLength]),
+    nl, nl, !.
+printNamaJumlahKartu([H], NoUrut):-
+    \+ hide(H, _), !,
     infoPemain(H, ListKartu),
     lengthList(ListKartu, Length),
     format('Nama pemain ~w: ~w', [NoUrut, H]),
@@ -233,6 +269,18 @@ printNamaJumlahKartu([H], NoUrut):-
     format('Jumlah kartu: ~w', [Length]),
     nl, nl, !.
 printNamaJumlahKartu([H|T], NoUrut):-
+    hide(H, _), !,
+    infoPemain(H, ListKartu),
+    lengthList(ListKartu, Length),
+    format('Nama pemain ~w: ~w', [NoUrut, H]),
+    nl,
+    HideLength is Length - 1,
+    format('Jumlah kartu: ~w', [HideLength]),
+    nl, nl,
+    NewNoUrut is NoUrut + 1,
+    printNamaJumlahKartu(T, NewNoUrut), !.
+printNamaJumlahKartu([H|T], NoUrut):-
+    \+ hide(H, _), !,
     infoPemain(H, ListKartu),
     lengthList(ListKartu, Length),
     format('Nama pemain ~w: ~w', [NoUrut, H]),
