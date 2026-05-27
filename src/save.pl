@@ -57,6 +57,7 @@ printNamaKartu(S, [H|T]):-
     infoPemain(H, ListKartu),
     format(S, 'kartu(\'~w\'):[', [H]),
     printKartu(S, ListKartu),
+    printKartuHide(S, H),
     printNamaKartu(S, T).
 
 printKartu(S, []):-
@@ -67,6 +68,13 @@ printKartu(S, [kartu(Warna, Jenis)|T]):-
     format(S, '~w-~w,', [Warna, Jenis]),
     printKartu(S, T).
 
+
+printKartuHide(S, H):-
+    hide(H, IdxKartu),
+    format(S, 'index_kartu_tersembunyi(\'~w\'):~w.~n', [H, IdxKartu]), !.
+printKartuHide(S, H):-
+    \+ hide(H, _), 
+    format(S, 'index_kartu_tersembunyi(\'~w\'):0.~n', [H]), !.
 
 
 

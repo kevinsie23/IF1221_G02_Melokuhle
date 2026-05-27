@@ -24,7 +24,8 @@ uni(_):-
     Length \== 2,
     giveNCard(Nama, 1),
     nextGiliran,
-    format('~w gagal melakukan UNI dan mendapatkan 1 kartu!', [Nama]), !.    
+    format('~w gagal melakukan UNI dan mendapatkan 1 kartu!~n', [Nama]),
+    printGiliran, !.    
 
 
 uni(IdxKartu):-
@@ -40,7 +41,7 @@ uni(IdxKartu):-
 
 
 unikanKartu(IdxKartu, Nama) :-
-    format('~w menyerukan UNI!', [Nama]),
+    format('~w menyerukan UNI!~n', [Nama]),
     playCard(Nama, IdxKartu), !.
 
 % Benar jika Pemain mengikuti aturan 
@@ -141,3 +142,70 @@ getPrevPlayer(NamaPemain) :-
     PrevGiliran is ((Giliran + (ArahGiliran * -1) - 1) mod JumlahPemain) + 1, 
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, PrevGiliran, NamaPemain).
+
+
+
+
+sembunyikanKartu(_) :-
+    playedDraw,
+    write('Pemain sebelumnya memainkan draw_two! Silahkan ambilKartu'), !.
+
+sembunyikanKartu(_) :-
+    playedDrawFour,
+    write('Pemain sebelumnya memainkan wild_draw_four! Silahkan ambilKartu'), !.
+
+sembunyikanKartu(_) :-
+    \+ playedDraw,
+    \+ playedDrawFour,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    hide(NamaPemain, _), !,
+    format('~w telah memiliki kartu yang disembunyikan.~n', [NamaPemain]).
+
+sembunyikanKartu(IdxKartu) :-
+    \+ playedDraw,
+    \+ playedDrawFour,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    \+ hide(NamaPemain, _), !,
+    hideCard(NamaPemain, IdxKartu).  
+
+hideCard(NamaPemain, IdxKartu) :-
+    infoPemain(NamaPemain, ListKartu),
+    lengthList(ListKartu, LengthKartu),
+    IdxKartu > LengthKartu, 
+    write('Indeks kartu tidak valid!'), nl, !.
+
+hideCard(NamaPemain, _) :-
+    infoPemain(NamaPemain, ListKartu),
+    lengthList(ListKartu, LengthKartu),
+    LengthKartu =:= 1, 
+    write('Kartu tidak boleh disembunyikan jika jumlah kartu tersisa 1.'), nl, !.
+
+hideCard(NamaPemain, IdxKartu) :-
+    infoPemain(NamaPemain, ListKartu),
+    getElementAtIndex(ListKartu, IdxKartu, kartu(Warna, Jenis)),
+    format('Kartu ~w-~w berhasil disembunyikan.~n', [Warna, Jenis]),
+    assertz(hide(NamaPemain, IdxKartu)),
+    nextGiliran,
+    printGiliran.
+
+tampilkanKartu:-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    \+ hide(NamaPemain, _), !,
+    write('Tidak ada kartu yang disembunyikan!.'), nl.
+
+tampilkanKartu:-
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
+    hide(NamaPemain, IdxKartu), !,
+    infoPemain(NamaPemain, ListKartu),
+    getElementAtIndex(ListKartu, IdxKartu, kartu(Warna, Jenis)),
+    format('Kartu ~w-~w tidak disembunyikan lagi.~n', [Warna, Jenis]),
+    retract(hide(NamaPemain, _)).
+    

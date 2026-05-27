@@ -1,0 +1,14 @@
+urutan_pemain:['a','b','c','d'].
+giliran:'a'.
+discard_top:kuning-6.
+warna_aktif:kuning.
+arah_permainan:kanan.
+status_UNI:[].
+kartu('a'):[merah-2,kuning-1,hitam-wild,hijau-5,biru-7,hijau-4,merah-reverse].
+index_kartu_tersembunyi('a'):1.
+kartu('b'):[merah-6,hitam-wild,kuning-skip,kuning-5,merah-9,hijau-8,merah-4,merah-0].
+index_kartu_tersembunyi('b'):0.
+kartu('c'):[merah-5,biru-draw_two,kuning-reverse,biru-6,biru-1,hijau-draw_two,hijau-6,merah-1].
+index_kartu_tersembunyi('c'):0.
+kartu('d'):[biru-4,biru-8,merah-skip,hijau-9,kuning-7,hijau-7,hitam-wild_draw_four].
+index_kartu_tersembunyi('d'):5.

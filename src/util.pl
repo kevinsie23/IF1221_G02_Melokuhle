@@ -56,6 +56,13 @@ isMember(X, [_|T]):- isMember(X,T).
 
 
 
+checkLength(Length):-
+    Length =\= 1, !.
+checkLength(Length):-
+    Length =:= 1, !,
+    tampilkanKartu.
+
+
 /* ---UBAH INPUT MENJADI .TXT--- */
 toTxt(Name, File):-
     atom_codes(Name, Codes),

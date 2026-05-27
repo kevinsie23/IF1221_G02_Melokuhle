@@ -10,3 +10,4 @@
 :- dynamic(drawPile/1).
 :- dynamic(warnaActive/1).
 :- dynamic(startedGame/1).
+:- dynamic(hide/2).
