@@ -138,6 +138,8 @@ printAksiUtama(No):-
     printTampilkan(No6).
 
 printSembunyi(CurNo, NextNo):-
+    \+ playedDraw,
+    \+ playedDrawFour,
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
@@ -150,8 +152,16 @@ printSembunyi(CurNo, NextNo):-
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     hide(NamaPemain, _), !,
     NextNo is CurNo.
+printSembunyi(CurNo, NextNo):-
+    playedDraw, !,
+    NextNo is CurNo.
+printSembunyi(CurNo, NextNo):-
+    playedDrawFour, !,
+    NextNo is CurNo.
 
 printTampilkan(CurNo):-
+    \+ playedDraw,
+    \+ playedDrawFour,
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
@@ -162,6 +172,10 @@ printTampilkan(_):-
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     \+ hide(NamaPemain, _), !.
+printTampilkan(_):-
+    playedDraw, !.
+printTampilkan(_):-
+    playedDrawFour, !.
 
 /*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
 printMainkanKartu(CurNo, NextNo):-
