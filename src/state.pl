@@ -22,9 +22,9 @@ loadGame:-
     loadGiliran(S),
     loadTopDiscard(S),
     loadWarnaAktif(S),
-    loadKartuPemain(S),
     loadArahPermainan(S),
     loadStatusUni(S),
+    loadKartuPemain(S),
     close(S),
     asserta(startedGame(1)),
     asserta(drawPile([])).
@@ -35,6 +35,8 @@ loadGame:-
 
 /* -----SAVE GAME----- */
 saveGame:-
+    \+ playedDraw,
+    \+ playedDrawFour, !,
     write('Masukkan nama file penyimpanan: '),
     read(Name),
     toTxt(Name, File),
@@ -44,11 +46,25 @@ saveGame:-
     writeGiliran(S),
     writeTopDiscard(S),
     writeWarnaAktif(S),
-    writeKartuPemain(S),
     writeArahPermainan(S),
     writeStatusUni(S),
+    writeKartuPemain(S),
     close(S).
 
+
+saveGame:-
+    playedDraw, !,
+    idxGiliran(Giliran),
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, Giliran, Nama),
+    format('~w terkena draw_two dan harus melakukan aksi ambilKartu dulu.', [Nama]).
+
+saveGame:-
+    playedDrawFour, !,
+    idxGiliran(Giliran),
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, Giliran, Nama),
+    format('~w terkena draw_four dan harus melakukan aksi ambilKartu dulu.', [Nama]).
 
 
 

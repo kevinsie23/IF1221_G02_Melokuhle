@@ -1,7 +1,17 @@
 /* ---WRITE URUTAN--- */
 writeUrutan(S):-
     urutanPemain(ListPemain),
-    format(S, 'urutan_pemain:~w.~n', [ListPemain]).
+    format(S, 'urutan_pemain:[', []),
+    writePemain(S, ListPemain).
+
+
+writePemain(S, []):-
+    format(S, '].~n', []), !.
+writePemain(S, [H]):-
+    format(S, '\'~w\'].~n', [H]), !.
+writePemain(S, [H|T]):-
+    format(S, '\'~w\',', [H]),
+    writePemain(S, T).
 
 
 
@@ -12,7 +22,7 @@ writeGiliran(S):-
     urutanPemain(ListPemain),
     idxGiliran(Giliran),
     grabNamaPemain(ListPemain, Giliran, Nama),
-    format(S, 'giliran:~w.~n', [Nama]).
+    format(S, 'giliran:\'~w\'.~n', [Nama]).
 
 
 
@@ -45,12 +55,12 @@ writeKartuPemain(S):-
 printNamaKartu(_, []):- !.
 printNamaKartu(S, [H|T]):-
     infoPemain(H, ListKartu),
-    format(S, 'kartu_~w:[', [H]),
+    format(S, 'kartu(\'~w\'):[', [H]),
     printKartu(S, ListKartu),
     printNamaKartu(S, T).
 
 printKartu(S, []):-
-    format(S, ']~n', []), !.
+    format(S, '].~n', []), !.
 printKartu(S, [kartu(Warna, Jenis)]):-
     format(S, '~w-~w].~n', [Warna, Jenis]), !.
 printKartu(S, [kartu(Warna, Jenis)|T]):-
@@ -79,7 +89,8 @@ writeArahPermainan(S):-
 writeStatusUni(S):-
     urutanPemain(ListPemain),
     possibleUni(ListPemain, ListUni),
-    format(S, 'status_UNI:~w.~n', [ListUni]).
+    format(S, 'status_UNI:[', []),
+    writePemain(S, ListUni).
 
 possibleUni([], []):- !.
 possibleUni([H|T], [H|T2]):-
