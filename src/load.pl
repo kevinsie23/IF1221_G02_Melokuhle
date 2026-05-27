@@ -23,7 +23,8 @@ readAllNames(S, []):-
     peek_code(S, 93), !.
 readAllNames(S, [Nama|T]):-
     readWord(S, CharNama),
-    atom_codes(Nama, CharNama),
+    removePetik(CharNama, NoPetikCharNama),
+    atom_codes(Nama, NoPetikCharNama),
     get_code(S, Char),
     skipChar(S, Char, T).
 
@@ -37,6 +38,14 @@ readWord(S, [Char|T]):-
     readWord(S, T).
 readWord(_, []).
 
+removePetik([], []).
+removePetik([H|T], NoPetikCharNama):-
+    H =:= 39, !,
+    removePetik(T, NoPetikCharNama).
+removePetik([H|T], [H|T2]):-
+    H =\= 39, !,
+    removePetik(T, T2).
+
 skipChar(_, 93, []):- !.
 skipChar(S, 44, T):-
     readAllNames(S, T).
@@ -49,7 +58,8 @@ skipChar(S, 44, T):-
 loadGiliran(S):-
     skipTeksAwal(S),
     readWord(S, CharNama),
-    atom_codes(Nama, CharNama),
+    removePetik(CharNama, NoPetikCharNama),
+    atom_codes(Nama, NoPetikCharNama),
     urutanPemain(ListPemain),
     findGiliran(Nama, ListPemain, 1, Giliran),
     asserta(idxGiliran(Giliran)).
