@@ -134,6 +134,11 @@ checkPlayerCount(_,Num):- write('Mohon masukkan angka antara 2-4.'), nl, getPlay
 
 inputName(PlayerNumber):- inputNameHelper(PlayerNumber,1).
 
+% Fail Case
+checkUpperCase(Name):- atom_codes(Name, [First|_]), First < 65, !, fail.
+checkUpperCase(Name):- atom_codes(Name, [First|_]), First > 90, !, fail.
+% Success
+checkUpperCase(Input) :- atom_codes(Input, _).
 % Base Case
 inputNameHelper(0,_):- !.
 % Case Sucess
@@ -142,7 +147,8 @@ inputNameHelper(X,Count):-
     write('Masukkan Nama pemain '), write(Count), write(': '),
     read(Name),
     urutanPemain(List),
-    \+ isMember(Name, List), !,  % Cek apakah Name ada di List urutan pemain
+    \+ isMember(Name, List), % Cek apakah Name ada di List urutan pemain
+    checkUpperCase(Name), !, % Cek apakah dimulai huruf kapital
     retract(urutanPemain(List)),
     assertz(urutanPemain([Name|List])), % Append Name ke List Urutan Pemain
     assertz(infoPemain(Name, [])), % Inisialisasi Info Pemain dgn Name valid dan list kartu kosong
@@ -151,14 +157,15 @@ inputNameHelper(X,Count):-
 % Case Fail
 inputNameHelper(X,Count):- 
     X>0,
-    write('Name sudah digunakan. Masukkan Nama lain:  '), 
+    write('Nama sudah digunakan atau Nama tidak dimulai huruf kapital. Masukkan Nama lain: '), 
     retryInput(X,Count).
 
 % retryInput Sucess
 retryInput(X, Count):-
     read(Name),
     urutanPemain(List),
-    \+ isMember(Name, List), !,
+    \+ isMember(Name, List), 
+    checkUpperCase(Name), !,
     retract(urutanPemain(List)),
     assertz(urutanPemain([Name|List])), % Append Name ke List Urutan Pemain
     assertz(infoPemain(Name, [])), % Inisialisasi Info Pemain dgn Name valid dan list kartu kosong
@@ -166,7 +173,7 @@ retryInput(X, Count):-
     inputNameHelper(NextX, NextCount).
 % retryInput Fail
 retryInput(X, Count):-     
-    write('Name sudah digunakan. Masukkan Name lain:  '), 
+    write('Nama sudah digunakan atau Nama tidak dimulai huruf kapital. Masukkan Nama lain:  '), 
     retryInput(X, Count).
 
 randomiseOrder:- 
