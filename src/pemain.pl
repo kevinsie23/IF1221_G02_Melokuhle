@@ -29,6 +29,7 @@ uni(_):-
 
 
 uni(IdxKartu):-
+    startedGame(1),
     idxGiliran(Giliran),
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, Giliran, Nama),

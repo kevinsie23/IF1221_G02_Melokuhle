@@ -1,5 +1,21 @@
 /* -----LOAD GAME----- */
 loadGame:-
+    startedGame(1), !,
+    write('Permainan sudah dimulai dan tidak bisa melakukan load.'), nl.
+
+loadGame:-
+    startedGame(0), !,
+
+    write('Masukkan nama file yang akan dimuat: '),
+    read(Name),
+    toTxt(Name, File),
+
+    loadFile(File).
+
+loadFile(File):-
+    file_exists(File), !,
+    open(File, read, S),
+
     retractall(discardPile(_)),
     retractall(urutanPemain(_)),
     retractall(jumlahPemain(_)),
@@ -7,17 +23,12 @@ loadGame:-
     retractall(infoPemain(_, _)),
     retractall(idxGiliran(_)),
     retractall(playedDraw),
-    retractall(eplayedDrawFour),
+    retractall(playedDrawFour),
     retractall(uniCalled(_)), 
     retractall(drawPile(_)),
     retractall(warnaActive(_)),
     retractall(startedGame(_)),
     retractall(hide(_, _)),
-
-    write('Masukkan nama file yang akan dimuat: '),
-    read(Name),
-    toTxt(Name, File),
-    open(File, read, S),
 
     loadUrutan(S),
     loadGiliran(S),
@@ -37,8 +48,9 @@ loadGame:-
     asserta(startedGame(1)),
     asserta(drawPile([])).
 
-
-
+loadFile(File):-
+    \+ file_exists(File), !,
+    write('File tidak ditemukan.'), nl.
 
 
 /* -----SAVE GAME----- */
@@ -59,6 +71,22 @@ saveGame:-
     writeStatusUni(S),
     writeKartuPemain(S),
     close(S),
+
+    retractall(discardPile(_)),
+    retractall(urutanPemain(_)),
+    retractall(jumlahPemain(_)),
+    retractall(reverseGiliran(_)),
+    retractall(infoPemain(_, _)),
+    retractall(idxGiliran(_)),
+    retractall(playedDraw),
+    retractall(eplayedDrawFour),
+    retractall(uniCalled(_)), 
+    retractall(drawPile(_)),
+    retractall(warnaActive(_)),
+    retractall(startedGame(_)),
+    retractall(hide(_, _)),
+    retractall(startedGame(_)),
+    asserta(startedGame(0)),
 
     format('Status permainan berhasil disimpan ke ~w.~n', [File]).
 
@@ -85,6 +113,7 @@ saveGame:-
 
 /* -----LIHAT KARTU----- */
 lihatKartu:-
+    startedGame(1),
     write('Berikut kartu yang anda miliki: '), nl,
     urutanPemain(ListPemain),
     idxGiliran(Giliran),
@@ -119,6 +148,7 @@ printListKartuPemain(Nama, [kartu(Warna, Jenis)|T], No):-
 
 /* -----LIHAT COMMAND----- */
 lihatCommand:-
+    startedGame(1),
     write('Aksi utama yang tersedia:'), nl,
     printAksiUtama(1),
     nl,
