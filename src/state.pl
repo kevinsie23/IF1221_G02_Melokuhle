@@ -216,6 +216,8 @@ printTampilkan(CurNo,NextNo):-
 printSwapKartu(CurNo):-
     \+ playedDraw,
     \+ playedDrawFour,
+    gameType(X),
+    X =:= 2, !,
     format('~w. swapKartu~n',[CurNo]), !.
 printSwapKartu(_):-
     playedDraw, !.
