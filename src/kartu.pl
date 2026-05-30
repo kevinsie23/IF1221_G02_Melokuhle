@@ -207,7 +207,7 @@ useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu 
     assertz(kartuAksiTerakhir(kartu(hitam, wild))), !.
 
 useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect untuk kartu wild
-    write('Kartu wild dimainkan!'), nl, nl,
+    write('Kartu wild_draw_four dimainkan!'), nl, nl,
     printListWithIndex([merah, kuning, biru, hijau]), nl,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
@@ -222,16 +222,62 @@ useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect un
     retractall(kartuAksiTerakhir(_)),
     assertz(kartuAksiTerakhir(kartu(hitam, wild_draw_four))), !.
 
-useEffect(kartu(hitam, mimic)) :-
-    (\+ kartuAksiTerakhir(_) ; kartuAksiTerakhir(kartu(hitam, mimic))),
-    useEffect(kartu(hitam, wild)), 
+useEffect(kartu(hitam, mimic)) :-                                           % Jika tidak ada kartu aksi terkahir
+    (\+ kartuAksiTerakhir(_)),
+    write('Kartu mimic dimainkan!'), nl,
+    write('Tidak ada kartu aksi terakhir!'), nl,
+    write('Kartu mimic otomatis menyalin kartu wild...'), nl, nl,
+    printListWithIndex([merah, kuning, biru, hijau]), nl,
+    write('Pilihlah angka sesuai dengan warna pilihanmu: '),
+    read(IdxWarna),
+    getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)),
     retractall(kartuAksiTerakhir(_)),
     assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
 
+useEffect(kartu(hitam, mimic)) :-                                           % Jika kartu aksi terkahir adalah mimic
+    kartuAksiTerakhir(kartu(hitam, mimic)),
+    write('Kartu mimic dimainkan!'), nl,
+    write('Kartu aksi terakhir: hitam-mimic'),
+    write('Kartu mimic otomatis menyalin efek kartu wild...'), nl, nl,
+    printListWithIndex([merah, kuning, biru, hijau]), nl,
+    write('Pilihlah angka sesuai dengan warna pilihanmu: '),
+    read(IdxWarna),
+    getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)),
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
 
-useEffect(kartu(hitam, mimic)) :-
-    kartuAksiTerakhir(KartuAksiTerakhir),
-    useEffect(KartuAksiTerakhir), 
+useEffect(kartu(hitam, mimic)) :-                                       % Jika kartu aksi terakhir adalah kartu hitam
+    kartuAksiTerakhir(kartu(hitam, Angka)),
+    write('Kartu mimic dimainkan!'), nl,
+    write('menyalin efek kartu '), write(Angka), write('...'), nl, nl,
+    useEffect(kartu(hitam, Angka)),
+    assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
+
+useEffect(kartu(hitam, mimic)) :-                                       % Jika kartu aksi terakhir adalah yang lainnya
+    kartuAksiTerakhir(kartu(WarnaAksi, AngkaAksi)),
+    WarnaAksi \= hitam,
+    write('Kartu mimic dimainkan!'), nl,
+    write('menyalin efek kartu '), write(AngkaAksi), write('...'), nl, nl,
+    warnaActive(CurrWarna),
+    useEffect(kartu(WarnaAksi, AngkaAksi)),
+    printListWithIndex([merah, kuning, biru, hijau]), nl,
+    write('Pilihlah angka sesuai dengan warna pilihanmu: '),
+    read(IdxWarna),
+    getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
+    retractall(warnaActive(_)),
+    assertz(warnaActive(Warna)),
     retractall(kartuAksiTerakhir(_)),
     assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
 
