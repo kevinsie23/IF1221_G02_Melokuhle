@@ -61,7 +61,6 @@ startMode(2):-
     % PrintTeam
     printTeam, nl,
     % Penentuan Urutan
-    randomiseOrder,
     printOrder,
     % Membentuk drawpile
     initDrawPile, 
@@ -93,9 +92,9 @@ splitList([First,Second|Rest], [First,Second], Rest).
 formTeam:- 
     randomiseOrder,
     urutanPemain(List),
-    splitList(List, Team1, Team2),
-    assertz(team(1,Team1)),
-    assertz(team(2,Team2)), !.
+    splitList(List, [P1|[P2]], [P3|[P4]]),
+    assertz(team(1,[P1,P3])),
+    assertz(team(2,[P2,P4])), !.
 
 printTeam:-
     team(1,[P1|[P2]]),
