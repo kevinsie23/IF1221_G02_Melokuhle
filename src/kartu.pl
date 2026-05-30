@@ -162,6 +162,8 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk re
     assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)), 
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(Warna, Angka))),
     write('Kartu reverse dimainkan!'), nl, !.
 
 useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk skip
@@ -172,6 +174,8 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk sk
     assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)),
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(Warna, Angka))),
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain), 
@@ -184,7 +188,9 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk dr
     retractall(prevWarnaActive(_)),
     assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
-    assertz(warnaActive(Warna)), !.
+    assertz(warnaActive(Warna)),
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(Warna, Angka))), !.
 
 useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu wild
     write('Kartu wild dimainkan!'), nl, nl,
@@ -196,7 +202,9 @@ useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu 
     retractall(prevWarnaActive(_)),
     assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
-    assertz(warnaActive(Warna)), !.
+    assertz(warnaActive(Warna)),
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(hitam, wild))), !.
 
 useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect untuk kartu wild
     write('Kartu wild dimainkan!'), nl, nl,
@@ -210,7 +218,22 @@ useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect un
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)),
     retractall(playedDrawFour),
-    assertz(playedDrawFour), !.
+    assertz(playedDrawFour), 
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(hitam, wild_draw_four))), !.
+
+useEffect(kartu(hitam, mimic)) :-
+    (\+ kartuAksiTerakhir(_) ; kartuAksiTerakhir(kartu(hitam, mimic))),
+    useEffect(kartu(hitam, wild)), 
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
+
+
+useEffect(kartu(hitam, mimic)) :-
+    kartuAksiTerakhir(KartuAksiTerakhir),
+    useEffect(KartuAksiTerakhir), 
+    retractall(kartuAksiTerakhir(_)),
+    assertz(kartuAksiTerakhir(kartu(hitam, mimic))), !.
 
 nextGiliran :-
     jumlahPemain(JumlahPemain),
