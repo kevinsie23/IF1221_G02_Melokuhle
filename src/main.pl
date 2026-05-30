@@ -8,6 +8,25 @@
 startedGame(0).
 startGame:- startedGame(1), !, write('Game sudah dimulai').
 startGame:- 
+    write('Tersedia 2 mode permainan.'), nl,
+    write('1. Mode Klasik'), nl,
+    write('2. Mode Turnamen'), nl,
+    inputMode(X),
+    assertz(gameType(X)),
+    startMode(X), !.
+
+modeValid(1).
+modeValid(2).
+inputMode(X):- 
+    write('Pilih mode permainan: '),
+    read(Input),
+    modeValid(Input), !, X = Input.
+inputMode(X):- 
+    write('Input hanya bisa 1 atau 2. Masukkan kembali input yang valid.'), nl,
+    inputMode(X).
+
+% Mode Klasik
+startMode(1):-
     \+ startedGame(1),!,
     assertz(urutanPemain([])),
     getPlayerCount(Num),
@@ -30,11 +49,53 @@ startGame:-
     retract(startedGame(0)), 
     assertz(startedGame(1)), !. 
 
+%Mode Turnamen
+startMode(2):- 
+    \+ startedGame(1),!,
+    assertz(urutanPemain([])),
+    assertz(jumlahPemain(4)),
+    inputName(4),
+    % bentukTim
+    formTeam,
+    write('Membentuk tim secara acak ...'), nl, nl,
+    team1(Team1),
+    team2(Team2),
+    printTeam(Team1,1),
+    printTeam(Team2,2), nl,
+    randomiseOrder,
+    printOrder,
+    % Membentuk drawpile
+    initDrawPile, 
+    % Membagikan kartu
+    giveCards, 
+    initDiscardPile,
+    discardPile([kartu(Warna, Jenis)|_]),
+    write('Kartu discard top: '), format('~w-~w', [Warna,Jenis]), write('.'), nl, nl,
+    assertz(warnaActive(Warna)),
+    assertz(idxGiliran(1)),
+    assertz(reverseGiliran(1)),
+    urutanPemain([Pemain1|_]),
+    write('Giliran '), write(Pemain1), write('.'),
+    retract(startedGame(0)), 
+    assertz(startedGame(1)), !. 
+
+splitList([First,Second|Rest], [First,Second], Rest).
+formTeam:- 
+    randomiseOrder,
+    urutanPemain(List),
+    splitList(List, Team1, Team2),
+    assertz(team1(Team1)),
+    assertz(team2(Team2)), !.
+
+printTeam([H|[T]], N):-
+    format('Tim ~d: ~w,~w.~n', [N,H,T]), !.
+
 % Predikat untuk check apakah list kartu pemain setelah memainkan kartu kosong dan 
-checkEndGame([]):- endGame, !.
+checkEndGame([]):- gameType(X), endGame(X), !.
 checkEndGame(_):- nextGiliran, printGiliran, !.
 
-endGame:- 
+% End Game Klasik
+endGame(1):- 
     idxGiliran(X),
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, X, Winner),
