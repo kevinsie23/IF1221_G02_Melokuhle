@@ -165,7 +165,8 @@ printAksiUtama(No):-
     printUni(No3, No4),
     printTangkap(No4, No5),
     printSembunyi(No5, No6),
-    printTampilkan(No6).
+    printTampilkan(No6,No7),
+    printSwapKartu(No7).
 
 printSembunyi(CurNo, NextNo):-
     \+ playedDraw,
@@ -189,22 +190,35 @@ printSembunyi(CurNo, NextNo):-
     playedDrawFour, !,
     NextNo is CurNo.
 
-printTampilkan(CurNo):-
+printTampilkan(CurNo,NextNo):-
     \+ playedDraw,
     \+ playedDrawFour,
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     hide(NamaPemain, _),    
-    format('~w. tampilkanKartu', [CurNo]), nl, !.
-printTampilkan(_):-
+    format('~w. tampilkanKartu', [CurNo]), nl,
+    NextNo is CurNo+1, !.
+printTampilkan(CurNo,NextNo):-
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     \+ hide(NamaPemain, _), !.
-printTampilkan(_):-
+    NextNo is CurNo+1, !.
+printTampilkan(CurNo,NextNo):-
+    playedDraw, 
+    NextNo is CurNo, !.
+printTampilkan(CurNo,NextNo):-
+    playedDrawFour, 
+    NextNo is CurNo, !.
+
+printSwapKartu(CurNo):-
+    \+ playedDraw,
+    \+ playedDrawFour,
+    format('~w. swapKartu~n',[CurNo]), !.
+printSwapKartu(CurNo):-
     playedDraw, !.
-printTampilkan(_):-
+printSwapKartu(CurNo):-
     playedDrawFour, !.
 
 /*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
