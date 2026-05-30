@@ -58,3 +58,7 @@ kartu(hitam,wild).
 kartu(hitam,wild_draw_four).
 kartu(hitam,wild).
 kartu(hitam,wild_draw_four).
+kartu(hitam,mimic).
+kartu(hitam,mimic).
+kartu(hitam,mimic).
+kartu(hitam,mimic).
