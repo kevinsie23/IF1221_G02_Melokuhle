@@ -58,10 +58,12 @@ startMode(2):-
     % bentukTim
     formTeam,
     write('Membentuk tim secara acak ...'), nl, nl,
+    % PrintTeam
     team1(Team1),
     team2(Team2),
     printTeam(Team1,1),
     printTeam(Team2,2), nl,
+    % Penentuan Urutan
     randomiseOrder,
     printOrder,
     % Membentuk drawpile
