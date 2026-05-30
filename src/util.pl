@@ -22,7 +22,7 @@ deleteAtN(Idx, [H|T], Element, [H|Rest]) :-
 insertAtN(1, List, Element, [Element|List]):- !.
 insertAtN(Idx, [H|T], Element, [H|Rest]):-
     Idx>1,
-    NextId is Idx-1
+    NextId is Idx-1,
     insertAtN(NextId, T, Element, Rest), !.
 
 lengthList([], 0):- !.
