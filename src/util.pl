@@ -19,6 +19,11 @@ deleteAtN(Idx, [H|T], Element, [H|Rest]) :-
     NextId is Idx - 1,
     deleteAtN(NextId, T, Element, Rest).
 
+insertAtN(1, List, Element, [Element|List]):- !.
+insertAtN(Idx, [H|T], Element, [H|Rest]):-
+    Idx>1,
+    NextId is Idx-1
+    insertAtN(NextId, T, Element, Rest), !.
 
 lengthList([], 0):- !.
 lengthList([_|T], X):- lengthList(T,X1), X is X1+1.
