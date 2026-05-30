@@ -14,5 +14,5 @@
 :- dynamic(prevWarnaActive/1).
 :- dynamic(kartuAksiTerakhir/1).
 :- dynamic(gameType/1).
-:- dynamic(team1/1).
-:- dynamic(team2/1).
+:- dynamic(team/2).
+

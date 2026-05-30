@@ -59,10 +59,7 @@ startMode(2):-
     formTeam,
     write('Membentuk tim secara acak ...'), nl, nl,
     % PrintTeam
-    team1(Team1),
-    team2(Team2),
-    printTeam(Team1,1),
-    printTeam(Team2,2), nl,
+    printTeam, nl,
     % Penentuan Urutan
     randomiseOrder,
     printOrder,
@@ -81,16 +78,30 @@ startMode(2):-
     retract(startedGame(0)), 
     assertz(startedGame(1)), !. 
 
+findOther(Player, [H|_], H):-
+    Player \= H, !.
+
+findOther(Player, [_|T],Teamate):-
+    findOther(Player,T,Teamate), !.
+
+getTeamate(Player,Teamate):-
+    team(_, List),
+    isMember(Player,List),
+    findOther(Player,List,Teamate), !.
+
 splitList([First,Second|Rest], [First,Second], Rest).
 formTeam:- 
     randomiseOrder,
     urutanPemain(List),
     splitList(List, Team1, Team2),
-    assertz(team1(Team1)),
-    assertz(team2(Team2)), !.
+    assertz(team(1,Team1)),
+    assertz(team(2,Team2)), !.
 
-printTeam([H|[T]], N):-
-    format('Tim ~d: ~w,~w.~n', [N,H,T]), !.
+printTeam:-
+    team(1,[P1|[P2]]),
+    team(2,[P3|[P4]]),
+    format('Tim ~d: ~w,~w.~n', [1,P1,P2]), 
+    format('Tim ~d: ~w,~w.~n',[2,P3,P4]), !.
 
 % Predikat untuk check apakah list kartu pemain setelah memainkan kartu kosong dan 
 checkEndGame([]):- gameType(X), endGame(X), !.
