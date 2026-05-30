@@ -203,8 +203,9 @@ printTampilkan(CurNo,NextNo):-
     urutanPemain(ListPemain),
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
-    \+ hide(NamaPemain, _), !.
+    \+ hide(NamaPemain, _), !,
     NextNo is CurNo+1, !.
+
 printTampilkan(CurNo,NextNo):-
     playedDraw, 
     NextNo is CurNo, !.
@@ -216,9 +217,9 @@ printSwapKartu(CurNo):-
     \+ playedDraw,
     \+ playedDrawFour,
     format('~w. swapKartu~n',[CurNo]), !.
-printSwapKartu(CurNo):-
+printSwapKartu(_):-
     playedDraw, !.
-printSwapKartu(CurNo):-
+printSwapKartu(_):-
     playedDrawFour, !.
 
 /*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
