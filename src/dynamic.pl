@@ -11,3 +11,4 @@
 :- dynamic(warnaActive/1).
 :- dynamic(startedGame/1).
 :- dynamic(hide/2).
+:- dynamic(prevWarnaActive/1).

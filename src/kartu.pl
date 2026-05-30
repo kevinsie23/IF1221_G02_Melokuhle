@@ -145,6 +145,9 @@ returnCard(NamaPemain, IdxKartu, Kartu) :-
 useEffect(kartu(Warna, Angka)) :-
     \+ (Angka = reverse ; Angka = skip ; Angka = draw_two),
     Warna \= hitam, 
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)), !.
 
@@ -154,13 +157,19 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk re
     NewReverseGiliran is ReverseGiliran * -1,
     retract(reverseGiliran(_)),
     assertz(reverseGiliran(NewReverseGiliran)), 
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)), 
     write('Kartu reverse dimainkan!'), nl, !.
 
 useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk skip
     Angka = skip,
-    nextGiliran, 
+    nextGiliran,
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)),
     urutanPemain(ListPemain),
@@ -171,6 +180,9 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk sk
 useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk draw_two
     Angka = draw_two,
     assertz(playedDraw),
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)), !.
 
@@ -180,6 +192,9 @@ useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu 
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)), !.
 
@@ -189,6 +204,9 @@ useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect un
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
+    warnaActive(CurrWarna),
+    retractall(prevWarnaActive(_)),
+    assertz(prevWarnaActive(CurrWarna)),
     retractall(warnaActive(_)),
     assertz(warnaActive(Warna)),
     retractall(playedDrawFour),
