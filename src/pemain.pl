@@ -210,3 +210,47 @@ tampilkanKartu:-
     format('Kartu ~w-~w tidak disembunyikan lagi.~n', [Warna, Jenis]),
     retract(hide(NamaPemain, _)).
     
+
+
+isValidIdx(Idx1, Idx2) :-
+    (Idx1 < 1 ; Idx2 < 1), !, 
+    write('Index tidak boleh kurang dari 1.'), nl, fail.
+
+isValidIdx(Idx1, _) :-
+    idxGiliran(CurrGiliran), urutanPemain(Urutan), 
+    getElementAtIndex(Urutan, CurrGiliran, P1),
+    infoPemain(P1, List), lengthList(List, L),
+    Idx1 > L, !, write('Index kartu P1 melebihi jumlah kartu.'), nl, fail.
+
+isValidIdx(_, Idx2) :-
+    idxGiliran(CurrGiliran), urutanPemain(Urutan), 
+    getElementAtIndex(Urutan, CurrGiliran, P1),
+    getTeamate(P1, P2), infoPemain(P2, List), lengthList(List, L),
+    Idx2 > L, !, write('Index kartu P2 melebihi jumlah kartu.'), nl, fail.
+
+isValidIdx(_,_).
+
+swapKartu(IdxP1,IdxP2):-
+    isValidIdx(IdxP1,IdxP2),
+
+    idxGiliran(CurrGiliran),
+    urutanPemain(Urutan), 
+    getElementAtIndex(Urutan, CurrGiliran, P1),
+    getTeamate(P1,P2),
+    infoPemain(P1, List1),
+    infoPemain(P2, List2),
+    deleteAtN(IdxP1, List1, kartu(Warna1, Jenis1), Rest1),
+    deleteAtN(IdxP2, List2, kartu(Warna2, Jenis2), Rest2),
+
+    insertAtN(IdxP1, Rest1, kartu(Warna2, Jenis2), NewList1),
+    insertAtN(IdxP2, Rest2, kartu(Warna1, Jenis1), NewList2),
+
+    retractall(infoPemain(P1,_)),
+    retractall(infoPemain(P2,_)),
+    
+    assertz(infoPemain(P1,NewList1)),
+    assertz(infoPemain(P2,NewList2)), 
+    format('~w menukar kartu ~w-~w dengan kartu ~w-~w milik ~w.~n', [P1,Warna1,Jenis1,Warna2,Jenis2,P2]),
+    nextGiliran,
+    printGiliran,
+    !.
