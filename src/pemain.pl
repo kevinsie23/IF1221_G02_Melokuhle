@@ -113,26 +113,26 @@ tantang :-
 cekValidDrawFour(NamaPemain, Hasil) :-            % Hasil 0 jika draw four tidak valid, 1 jika valid.
     cekValidDrawFourHelper(NamaPemain, 1, Hasil).
 
-cekValidDrawFourHelper(NamaPemain, Idx, 1) :-
+cekValidDrawFourHelper(NamaPemain, Idx, 1) :-     % Case jika semua kartu sudah dicek.
     infoPemain(NamaPemain, ListKartu),
     lengthList(ListKartu, Length),
     Idx > Length, !.
-cekValidDrawFourHelper(NamaPemain, Idx, 0) :-
+cekValidDrawFourHelper(NamaPemain, Idx, 0) :-    % Case jika ada kartu yang dapat dimainkan. 
     infoPemain(NamaPemain, ListKartu),
     getElementAtIndex(ListKartu, Idx, kartu(Warna, Angka)),
     discardPile([_ | TDiscard]),
     head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
-    (Warna = WarnaDiscard ; Angka = AngkaDiscard ; 
-    (Angka = wild, AngkaDiscard \= wild)), !.
-cekValidDrawFourHelper(NamaPemain, Idx, Hasil) :-
+    prevWarnaActive(PrevWarna),
+    (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard)), !.
+cekValidDrawFourHelper(NamaPemain, Idx, Hasil) :-   % Case jika kartu pada saat itu tidak dapat dimainkan.
     infoPemain(NamaPemain, ListKartu),
     lengthList(ListKartu, Length),
     Idx =< Length,
     getElementAtIndex(ListKartu, Idx, kartu(Warna, Angka)),
     discardPile([_ | TDiscard]),
     head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
-    (\+ (Warna = WarnaDiscard ; Angka = AngkaDiscard ; 
-    (Angka = wild, AngkaDiscard \= wild)) ; Angka = wild_draw_four), 
+    prevWarnaActive(PrevWarna),
+    (\+ (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard))), 
     !, NextIdx is Idx + 1,
     cekValidDrawFourHelper(NamaPemain, NextIdx, Hasil).
 
