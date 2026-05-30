@@ -5,12 +5,11 @@
 :- include('kartu.pl').
 :- include('util.pl').
 :- include('pemain.pl').
-
-urutanPemain([]). % Inisialisasi List Urutan Pemain
 startedGame(0).
 startGame:- startedGame(1), !, write('Game sudah dimulai').
 startGame:- 
     \+ startedGame(1),!,
+    assertz(urutanPemain([])),
     getPlayerCount(Num),
     assertz(jumlahPemain(Num)),
     inputName(Num),
@@ -29,7 +28,7 @@ startGame:-
     urutanPemain([Pemain1|_]),
     write('Giliran '), write(Pemain1), write('.'),
     retract(startedGame(0)), 
-    assertz(startedGame(1)). 
+    assertz(startedGame(1)), !. 
 
 % Predikat untuk check apakah list kartu pemain setelah memainkan kartu kosong dan 
 checkEndGame([]):- endGame, !.
@@ -45,7 +44,20 @@ endGame:-
     printRanking, 
     format('Selamat, ~w menjadi pemenang', [Winner]),
     retractall(startedGame(_)),
-    assertz(startedGame(0)), !.
+    assertz(startedGame(0)), 
+    retractall(jumlahPemain(_)),
+    retractall(urutanPemain(_)),
+    retractall(infoPemain(_,_)),
+    retractall(idxGiliran(_)),
+    retractall(reverseGiliran(_)),
+    retractall(discardPile(_)),
+    retractall(drawPile(_)),
+    retractall(playedDraw),
+    retractall(playedDrawFour),
+    retractall(uniCalled(_)),
+    retractall(warnaActive(_)),
+    retractall(prevWarnaActive(_)),
+    retractall(kartuAksiTerakhir(_)), !.
 
 printPoin(IdxPlayer):- 
     jumlahPemain(X), IdxPlayer =< X, !,
