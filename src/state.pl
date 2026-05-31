@@ -204,7 +204,7 @@ printTampilkan(CurNo,NextNo):-
     idxGiliran(CurrGiliran),
     getElementAtIndex(ListPemain, CurrGiliran, NamaPemain),
     \+ hide(NamaPemain, _), !,
-    NextNo is CurNo+1, !.
+    NextNo is CurNo, !.
     
 printTampilkan(CurNo,NextNo):-
     playedDraw, 
