@@ -223,7 +223,7 @@ useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect un
     assertz(kartuAksiTerakhir(kartu(hitam, wild_draw_four))), !.
 
 useEffect(kartu(hitam, mimic)) :-                                           % Jika tidak ada kartu aksi terkahir
-    (\+ kartuAksiTerakhir(_)),
+    ((\+ kartuAksiTerakhir(_)) ; kartuAksiTerakhir(kartu(tidak, ada))),
     write('Kartu mimic dimainkan!'), nl,
     write('Tidak ada kartu aksi terakhir!'), nl,
     write('Kartu mimic otomatis menyalin kartu wild...'), nl, nl,
