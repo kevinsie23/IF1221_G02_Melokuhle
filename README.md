@@ -37,6 +37,27 @@ Situasi endGame terjadi ketika salah satu pemain berhasil menghabiskan semua kar
 #### 2. saveGame
 saveGame merupakan sebuah perintah yang bertujuan untuk menyimpan informasi terkait permainan di saat itu. Apabila memilih untuk melakukan saveGame, semua data permainan akan disimpan ke file yang telah ditentukan dan permainan otomatis akan berhenti.
 
+## Struktur Repository
+```
+├── doc                     # Berisi semua laporan Milestone (1-3)
+│   ├── Milestone1_G02.pdf
+│   ├── Milestone2_G02.pdf
+│   └── Laporan_G02.pdf
+│
+│
+├── src                     # Tempat menyimpan semua file prolog (.pl)
+│   ├── dynamic.pl          # File berisi variabel-variabel dynamic
+│   ├── kartu.pl            # File berisi semua rules yang berkaitan dengan kartu
+│   ├── load.pl             # File berisi semua rules yang berkaitan dengan proses load
+│   ├── main.pl             # File utama
+│   ├── pemain.pl           # File berisi semua rules yang berkaitan dengan pemain
+│   ├── save.pl             # File berisi semua rules yang berkaitan dengan proses load
+│   ├── state.pl            # File berisi semua rules yang berkaitan dengan kondisi permainan 
+│   └── util.pl             # File berisi semua rules yang umum dan dipakai di banyak file lain
+│
+└── README.md
+```
+
 ## Fitur Utama
 - startGame: Memulai permainan, termasuk memilih mode permainan dan jumlah pemain
 - mainkanKartu(X): Memainkan kartu di tangan sesuai urutan indeksnya
