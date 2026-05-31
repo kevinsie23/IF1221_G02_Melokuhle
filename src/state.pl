@@ -119,7 +119,20 @@ lihatKartu:-
     idxGiliran(Giliran),
     grabNamaPemain(ListPemain, Giliran, Nama),
     infoPemain(Nama, ListKartu),    
-    printListKartuPemain(Nama, ListKartu, 1).
+    printListKartuPemain(Nama, ListKartu, 1),
+    lihatKartuTournamen.
+
+lihatKartuTournamen:-
+    gameType(X), X =:= 2,
+    urutanPemain(ListPemain),
+    idxGiliran(CurrGiliran),
+    getElementAtIndex(ListPemain, CurrGiliran, P1),
+    getTeamate(P1,P2),
+    nl,
+    format('Berikut kartu yang teman satu tim anda miliki (~w).~n', [P2]),
+    infoPemain(P2,List),
+    printListKartuPemain(P2, List, 1), !.
+
 
 /* ---Helper Predikat: Print Kartu Pemain sesuai Urutan--- */
 printListKartuPemain(_, [], _):- !.
