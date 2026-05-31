@@ -13,6 +13,7 @@ startGame:-
     write('2. Mode Turnamen'), nl,
     inputMode(X),
     assertz(gameType(X)),
+    assertz(kartuAksiTerakhir(kartu(tidak,ada))),
     startMode(X), !.
 
 modeValid(1).
