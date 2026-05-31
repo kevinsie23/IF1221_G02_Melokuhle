@@ -19,12 +19,12 @@ writeTournament(S):-
     urutanPemain(ListPemain),
     getElementAtIndex(ListPemain, 1, P1),
     getTeamate(P1,P2),
-    getElementAtIndex(ListPemain,3,P3),
+    getElementAtIndex(ListPemain,2,P3),
     getTeamate(P3,P4),
     format(S, 'mode:turnamen.~n',[]),
     format(S, 'tim1:[~q,~q].~n',[P1,P2]),
     format(S, 'tim2:[~q,~q].~n',[P3,P4]).
-writeTournament(_):- 
+writeTournament(S):- 
     gameType(X), X =:= 1,
     format(S, 'mode:klasik.~n',[]).
 

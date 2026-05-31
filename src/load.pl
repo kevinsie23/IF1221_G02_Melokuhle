@@ -9,6 +9,29 @@ cekChar(S, Char):-
     skipTeksAwal(S).
 
 
+loadMode(S):-
+    skipTeksAwal(S),
+    readWord(S,CharList),
+    atom_codes(Mode,CharList),
+    assertMode(Mode), !.
+
+assertMode(klasik):-
+    assertz(gameType(1)), !.
+assertMode(turnamen):-
+    assertz(gameType(2)), !.
+
+loadTournament(S):-
+    gameType(X), X =:= 2, !,
+    skipTeksAwal(S),
+    get_code(S,91),
+    readAllNames(S, Tim1),
+    skipTeksAwal(S),
+    get_code(S,91),
+    readAllNames(S, Tim2),
+    assertz(team(1,Tim1)),
+    assertz(team(2,Tim2)).
+loadTournament(_):- !.
+
 
 /* ---LOAD URUTAN--- */
 loadUrutan(S):-
