@@ -130,7 +130,8 @@ endGame(1):-
     retractall(uniCalled(_)),
     retractall(warnaActive(_)),
     retractall(prevWarnaActive(_)),
-    retractall(kartuAksiTerakhir(_)), !.
+    retractall(kartuAksiTerakhir(_)), 
+    retractall(gameType(_)), !.
 
 endGame(2):- 
     idxGiliran(X),
@@ -153,8 +154,24 @@ endGame(2):-
     infoPemain(P3, Poin3),
     infoPemain(P4, Poin4),
     Total2 is Poin3+Poin4,
-    format('Tim 1 (~w,~w): ~d + ~d = ~d poin', [P3,P4,Poin3,Poin4,Total2]),
-    printWinner(Total1, Total2), !.
+    format('Tim 2 (~w,~w): ~d + ~d = ~d poin~n', [P3,P4,Poin3,Poin4,Total2]),
+    printWinner(Total1, Total2),     
+    retractall(startedGame(_)),
+    assertz(startedGame(0)), 
+    retractall(jumlahPemain(_)),
+    retractall(urutanPemain(_)),
+    retractall(infoPemain(_,_)),
+    retractall(idxGiliran(_)),
+    retractall(reverseGiliran(_)),
+    retractall(discardPile(_)),
+    retractall(drawPile(_)),
+    retractall(playedDraw),
+    retractall(playedDrawFour),
+    retractall(uniCalled(_)),
+    retractall(warnaActive(_)),
+    retractall(prevWarnaActive(_)),
+    retractall(kartuAksiTerakhir(_)), 
+    retractall(gameType(_)), !.
 
 printWinner(Total1, Total2):- 
     Total1 > Total2, !,
