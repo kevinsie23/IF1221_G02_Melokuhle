@@ -166,7 +166,11 @@ uniPlayer([H|T]):-
 
 
 
-
+/* ---LOAD RECENT KARTU AKSI--- */
+loadKartuAksi(S):-
+    skipTeksAwal(S),
+    readCard(S, Warna, Jenis),
+    assertz(kartuAksiTerakhir(kartu(Warna, Jenis))).
 
 
 

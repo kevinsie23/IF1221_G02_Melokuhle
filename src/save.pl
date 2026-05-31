@@ -107,3 +107,10 @@ possibleUni([H|T], [H|T2]):-
 possibleUni([H|T], ListUni):-
     \+ uniCalled(H), !,
     possibleUni(T, ListUni).
+
+
+
+/* ---WRITE KARTU AKSI TERAKHIR--- */
+writeKartuAksi(S):-
+    kartuAksiTerakhir(kartu(Warna, Jenis)),
+    format(S, 'kartu_aksi_terakhir:~w-~w.~n', [Warna, Jenis]).
