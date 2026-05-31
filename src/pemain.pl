@@ -95,7 +95,7 @@ tantang :-
     giveNCard(PrevPemain, 4),
     retractall(playedDrawFour),
     write('Tantangan berhasil! '), write(PrevPemain), 
-    write(' mendapatkan 4 kartu'), nl, !.
+    write(' mendapatkan 4 kartu'), nl, nextGiliran, !.
 
 tantang :-
     playedDrawFour,
@@ -108,7 +108,7 @@ tantang :-
     giveNCard(CurrPemain, 6),
     retractall(playedDrawFour),
     write('Tantangan tidak berhasil! '), write(CurrPemain), 
-    write(' mendapatkan 6 kartu'), !.
+    write(' mendapatkan 6 kartu'), nextGiliran, !.
 
 cekValidDrawFour(NamaPemain, Hasil) :-            % Hasil 0 jika draw four tidak valid, 1 jika valid.
     cekValidDrawFourHelper(NamaPemain, 1, Hasil).
@@ -123,7 +123,7 @@ cekValidDrawFourHelper(NamaPemain, Idx, 0) :-    % Case jika ada kartu yang dapa
     discardPile([_ | TDiscard]),
     head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
     prevWarnaActive(PrevWarna),
-    (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard)), !.
+    (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard) ; (Angka = wild, AngkaDiscard \= wild)), !.
 cekValidDrawFourHelper(NamaPemain, Idx, Hasil) :-   % Case jika kartu pada saat itu tidak dapat dimainkan.
     infoPemain(NamaPemain, ListKartu),
     lengthList(ListKartu, Length),
@@ -132,7 +132,7 @@ cekValidDrawFourHelper(NamaPemain, Idx, Hasil) :-   % Case jika kartu pada saat 
     discardPile([_ | TDiscard]),
     head(TDiscard, kartu(WarnaDiscard, AngkaDiscard)),
     prevWarnaActive(PrevWarna),
-    (\+ (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard))), 
+    (\+ (Warna = PrevWarna ; (WarnaDiscard \= hitam, Angka = AngkaDiscard) ; (Angka = wild, AngkaDiscard \= wild))), 
     !, NextIdx is Idx + 1,
     cekValidDrawFourHelper(NamaPemain, NextIdx, Hasil).
 
