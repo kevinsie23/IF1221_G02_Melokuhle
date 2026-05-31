@@ -195,8 +195,11 @@ useEffect(kartu(Warna, Angka)) :-                           % useEffect untuk dr
 useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu wild
     write('Kartu wild dimainkan!'), nl, nl,
     printListWithIndex([merah, kuning, biru, hijau]), nl,
+    repeat,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
+    ((IdxWarna > 0, IdxWarna < 5, !) ; 
+    ((IdxWarna < 1 ; IdxWarna > 4), write('Input tidak valid!'), nl)),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
     warnaActive(CurrWarna),
     retractall(prevWarnaActive(_)),
@@ -209,8 +212,11 @@ useEffect(kartu(hitam, wild)) :-                        % useEffect untuk kartu 
 useEffect(kartu(hitam, wild_draw_four)) :-                        % useEffect untuk kartu wild
     write('Kartu wild_draw_four dimainkan!'), nl, nl,
     printListWithIndex([merah, kuning, biru, hijau]), nl,
+    repeat,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
+    ((IdxWarna > 0, IdxWarna < 5, !) ; 
+    ((IdxWarna < 1 ; IdxWarna > 4), write('Input tidak valid!'), nl)),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
     warnaActive(CurrWarna),
     retractall(prevWarnaActive(_)),
@@ -228,8 +234,11 @@ useEffect(kartu(hitam, mimic)) :-                                           % Ji
     write('Tidak ada kartu aksi terakhir!'), nl,
     write('Kartu mimic otomatis menyalin kartu wild...'), nl, nl,
     printListWithIndex([merah, kuning, biru, hijau]), nl,
+    repeat,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
+    ((IdxWarna > 0, IdxWarna < 5, !) ; 
+    ((IdxWarna < 1 ; IdxWarna > 4), write('Input tidak valid!'), nl)),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
     warnaActive(CurrWarna),
     retractall(prevWarnaActive(_)),
@@ -245,8 +254,11 @@ useEffect(kartu(hitam, mimic)) :-                                           % Ji
     write('Kartu aksi terakhir: hitam-mimic'),
     write('Kartu mimic otomatis menyalin efek kartu wild...'), nl, nl,
     printListWithIndex([merah, kuning, biru, hijau]), nl,
+    repeat,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
+    ((IdxWarna > 0, IdxWarna < 5, !) ; 
+    ((IdxWarna < 1 ; IdxWarna > 4), write('Input tidak valid!'), nl)),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
     warnaActive(CurrWarna),
     retractall(prevWarnaActive(_)),
@@ -271,8 +283,11 @@ useEffect(kartu(hitam, mimic)) :-                                       % Jika k
     warnaActive(CurrWarna),
     useEffect(kartu(WarnaAksi, AngkaAksi)),
     printListWithIndex([merah, kuning, biru, hijau]), nl,
+    repeat,
     write('Pilihlah angka sesuai dengan warna pilihanmu: '),
     read(IdxWarna),
+    ((IdxWarna > 0, IdxWarna < 5, !) ; 
+    ((IdxWarna < 1 ; IdxWarna > 4), write('Input tidak valid!'), nl)),
     getElementAtIndex([merah, kuning, biru, hijau], IdxWarna, Warna),
     retractall(prevWarnaActive(_)),
     assertz(prevWarnaActive(CurrWarna)),
