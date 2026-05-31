@@ -223,6 +223,7 @@ printSwapKartu(_):-
     playedDraw, !.
 printSwapKartu(_):-
     playedDrawFour, !.
+printSwapKartu(_).
 
 /*Print mainkanKartu hanya jika tidak ada yang memainkan draw_two atau draw_four*/
 printMainkanKartu(CurNo, NextNo):-
@@ -236,6 +237,7 @@ printMainkanKartu(CurNo, NextNo):-
 printMainkanKartu(CurNo, NextNo):-
     playedDrawFour, !,
     NextNo is CurNo.
+    
 
 /*Print ambilKartu dalam state apapun*/
 printAmbilKartu(CurNo, NextNo):-
@@ -329,11 +331,16 @@ grabNamaPemain([_|T], Giliran, Nama):-
 cekInfo:-
     printTopDiscardCard,
     nl, nl,
+    printTeamCheck,
     printUrutanPemain,
     nl, nl,
     printInfoPemain.
 
-
+printTeamCheck:- 
+    gameType(X), X =:= 2, !,
+    printTeam,
+    nl, !.
+printTeamCheck:- !.
 
 /* ---Helper Predikat: Print Urutan Nama dan Jumlah Kartu sesuai Arah---*/
 printInfoPemain:-
