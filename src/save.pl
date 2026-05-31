@@ -22,9 +22,11 @@ writeTournament(S):-
     getElementAtIndex(ListPemain,3,P3),
     getTeamate(P3,P4),
     format(S, 'mode:turnamen.~n',[]),
-    format(S, 'tim1:[~q,~q]~n',[P1,P2]),
-    format(S, 'tim2:[~q,~q]~n',[P3,P4]).
-writeTournament(_):- !.
+    format(S, 'tim1:[~q,~q].~n',[P1,P2]),
+    format(S, 'tim2:[~q,~q].~n',[P3,P4]).
+writeTournament(_):- 
+    gameType(X), X =:= 1,
+    format(S, 'mode:klasik.~n',[]).
 
 /* ---WRITE GILIRAN--- */
 writeGiliran(S):-
