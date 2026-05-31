@@ -63,7 +63,8 @@ saveGame:-
     read(Name),
     toTxt(Name, File),
     open(File, write, S),
-    
+
+    writeTournament(S),
     writeUrutan(S),
     writeGiliran(S),
     writeTopDiscard(S),
@@ -81,7 +82,7 @@ saveGame:-
     retractall(infoPemain(_, _)),
     retractall(idxGiliran(_)),
     retractall(playedDraw),
-    retractall(eplayedDrawFour),
+    retractall(playedDrawFour),
     retractall(uniCalled(_)), 
     retractall(drawPile(_)),
     retractall(warnaActive(_)),
