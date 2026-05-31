@@ -48,6 +48,7 @@ saveGame merupakan sebuah perintah yang bertujuan untuk menyimpan informasi terk
 ├── src                     # Tempat menyimpan semua file prolog (.pl)
 │   ├── dynamic.pl          # File berisi variabel-variabel dynamic
 │   ├── kartu.pl            # File berisi semua rules yang berkaitan dengan kartu
+│   ├── kartu.txt           # File berisi data semua kartu-kartu
 │   ├── load.pl             # File berisi semua rules yang berkaitan dengan proses load
 │   ├── main.pl             # File utama
 │   ├── pemain.pl           # File berisi semua rules yang berkaitan dengan pemain
