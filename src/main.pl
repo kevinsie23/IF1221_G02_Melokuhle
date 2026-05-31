@@ -113,7 +113,7 @@ endGame(1):-
     getElementAtIndex(ListPemain, X, Winner),
     write('Permainan Selesai! '), write(Winner), write(' menghabiskan semua kartunya! '),
     write('Berikut perhitungan poin sisa kartu'), nl, 
-    printPoin(1), nl, 
+    printPoin(1), nl, nl,
     printRanking, 
     format('Selamat, ~w menjadi pemenang', [Winner]),
     retractall(startedGame(_)),
@@ -131,6 +131,40 @@ endGame(1):-
     retractall(warnaActive(_)),
     retractall(prevWarnaActive(_)),
     retractall(kartuAksiTerakhir(_)), !.
+
+endGame(2):- 
+    idxGiliran(X),
+    urutanPemain(ListPemain),
+    getElementAtIndex(ListPemain, X, P1),
+    write('Permainan Selesai! '), write(P1), write(' menghabiskan semua kartunya! '),
+    write('Berikut perhitungan poin sisa kartu'), nl, 
+    printPoin(1), nl, nl,
+    write('Berikut perhitungan poin untuk masing-masing team'), nl,
+    % Perhitungan Tim 1
+    getTeamate(P1,P2),
+    infoPemain(P1, Poin1),
+    infoPemain(P2, Poin2),
+    Total1 is Poin1+Poin2,
+    format('Tim 1 (~w,~w): ~d + ~d = ~d poin~n', [P1,P2,Poin1,Poin2,Total1]),
+    % Perhitungan Tim 2
+    Temp is X+1,
+    getElementAtIndex(ListPemain, Temp, P3),
+    getTeamate(P3,P4),
+    infoPemain(P3, Poin3),
+    infoPemain(P4, Poin4),
+    Total2 is Poin3+Poin4,
+    format('Tim 1 (~w,~w): ~d + ~d = ~d poin', [P3,P4,Poin3,Poin4,Total2]),
+    printWinner(Total1, Total2), !.
+
+printWinner(Total1, Total2):- 
+    Total1 > Total2, !,
+    write('Selamat, Tim 2 menjadi pemenang!'), !.
+printWinner(Total1, Total2):- 
+    Total1 < Total2, !,
+    write('Selamat, Tim 1 menjadi pemenang!'), !.
+printWinner(Total1, Total2):- 
+    Total1 =:= Total2, !,
+    write('Game berakhir dalam seri!'), !.
 
 printPoin(IdxPlayer):- 
     jumlahPemain(X), IdxPlayer =< X, !,
@@ -194,8 +228,6 @@ printRankingHelper([H|T], Count):-
     format('~d. ~w (~d poin)~n',[Count, H, Poin]),
     NewCount is Count+1,
     printRankingHelper(T, NewCount).
-
-
 
 insertSort([],[]):- !.
 insertSort([H|T], Sorted) :- 
